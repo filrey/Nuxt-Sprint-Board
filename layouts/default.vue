@@ -74,6 +74,11 @@ export default {
           title: "Demo",
           to: "/demo",
         },
+        {
+          icon: "mdi-face",
+          title: "Create",
+          to: "/create",
+        },
       ],
       miniVariant: false,
       right: true,
