@@ -4,7 +4,7 @@ import axios from "axios";
 const createStore = () => {
   return new Vuex.Store({
     state: {
-      user: "TestUser",
+      user: "Filiberto Reyes",
       loadedTickets: [],
       loadedTest: []
     },
@@ -14,6 +14,9 @@ const createStore = () => {
       },
       setTest(state, test) {
         state.loadedTest = test;
+      },
+      setUser(state, user) {
+        state.loadedUser = user;
       }
     },
     actions: {
@@ -31,11 +34,17 @@ const createStore = () => {
       },
       setTickets(vuexContext, tickets) {
         vuexContext.commit("setTickets", tickets);
+      },
+      setUser(vuexContext, user) {
+        vuexContext.commit("setUser", user);
       }
     },
     getters: {
       loadedTickets(state) {
         return state.loadedTickets;
+      },
+      loadedUser(state) {
+        return state.user;
       }
     }
   });

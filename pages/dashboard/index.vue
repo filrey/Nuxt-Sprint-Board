@@ -4,6 +4,7 @@
     <h1>Current Project</h1>
     <Ticket-List :tickets="this.tickets" />
     <h1>Pie chart</h1>
+    <v-progress-circular :size="100" :color="purple" :value="75" :width="20"></v-progress-circular>
   </div>
 </template>
 

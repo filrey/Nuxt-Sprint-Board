@@ -12,7 +12,8 @@
       <v-list>
         <v-avatar color="indigo">
           <v-icon dark>mdi-account-circle</v-icon>
-        </v-avatar>User Name
+        </v-avatar>
+        {{loadedUser}}
         <v-divider></v-divider>
         <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
           <v-list-item-action>
@@ -45,6 +46,11 @@
 
 <script>
 export default {
+  computed: {
+    loadedUser() {
+      return this.$store.getters.loadedUser;
+    },
+  },
   data() {
     return {
       clipped: false,
