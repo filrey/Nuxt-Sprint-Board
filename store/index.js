@@ -27,7 +27,7 @@ const createStore = () => {
             }
             vuexContext.commit("setTest", testArray);
           })
-          .catch(e => AudioContext.error(e));
+          .catch(e => context.error(e));
       },
       setTickets(vuexContext, tickets) {
         vuexContext.commit("setTickets", tickets);

@@ -13,32 +13,52 @@ export default {
   components: {
     TicketList,
   },
-  asyncData(context, callback) {
-    callback(null, {
-      tickets: [
-        {
-          title: "title 1",
-        },
-        {
-          title: "title 2",
-        },
-      ],
-    });
-  },
-  created() {
-    this.$store.dispatch("setTickets", this.tickets);
-  },
-  // data() {
-  //   return {
+  // asyncData(context, callback) {
+  //   callback(null, {
   //     tickets: [
   //       {
   //         title: "title 1",
+  //         description: "My description",
+  //         priority: "high",
+  //         status: "open",
+  //         type: "bug",
+  //         created: new Date(),
   //       },
   //       {
   //         title: "title 2",
+  //         description: "My description",
+  //         priority: "high",
+  //         status: "open",
+  //         type: "bug",
+  //         created: new Date(),
   //       },
   //     ],
-  //   };
+  //   });
   // },
+  created() {
+    this.$store.dispatch("setTickets", this.tickets);
+  },
+  data() {
+    return {
+      tickets: [
+        {
+          title: "title 1",
+          description: "My description",
+          priority: "high",
+          status: "open",
+          type: "bug",
+          created: new Date(),
+        },
+        {
+          title: "title 2",
+          description: "My description",
+          priority: "high",
+          status: "open",
+          type: "bug",
+          created: new Date(),
+        },
+      ],
+    };
+  },
 };
 </script>

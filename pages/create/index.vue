@@ -11,11 +11,12 @@ export default {
     onSubmit() {
       axios
         .post("https://agile-sprint-board.firebaseio.com/test.json", {
-          title: "hello"
+          title: "hello",
+          updatedDate: new Date(),
         })
-        .then(result => console.log(result))
-        .catch(e => console.log(e));
-    }
-  }
+        .then((result) => console.log(result))
+        .catch((e) => console.log(e));
+    },
+  },
 };
 </script>
