@@ -6,7 +6,8 @@ const createStore = () => {
     state: {
       user: "Filiberto Reyes",
       loadedTickets: [],
-      loadedTest: []
+      loadedTest: [],
+      token: null
     },
     mutations: {
       setTickets(state, tickets) {
@@ -17,6 +18,9 @@ const createStore = () => {
       },
       setUser(state, user) {
         state.loadedUser = user;
+      },
+      setToken(state, token) {
+        state.token = token;
       }
     },
     actions: {
@@ -37,6 +41,22 @@ const createStore = () => {
       },
       setUser(vuexContext, user) {
         vuexContext.commit("setUser", user);
+      },
+      authenticateUser(vuexContext, authData) {
+        return axios
+          .post(
+            "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
+              process.env.fbAPIKey,
+            {
+              email: authData.email,
+              password: authData.password,
+              returnSecureToken: true
+            }
+          )
+          .then(result => {
+            vuexContext.commit("setToken", result.data.idToken);
+          })
+          .catch(e => console.log(e));
       }
     },
     getters: {

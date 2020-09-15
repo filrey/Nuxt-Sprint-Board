@@ -76,5 +76,8 @@ export default {
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/
    */
-  build: {}
+  build: {},
+  env: {
+    fbAPIKey: "AIzaSyAuOs2rQBFVMhWzqLwlASCo6oaFREApLzo"
+  }
 };
