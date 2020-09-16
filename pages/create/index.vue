@@ -8,6 +8,7 @@
 import axios from "axios";
 export default {
   name: "create",
+  middleware: "auth",
   methods: {
     onSubmit() {
       this.$store

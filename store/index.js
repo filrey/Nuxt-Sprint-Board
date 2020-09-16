@@ -78,6 +78,9 @@ const createStore = () => {
       },
       loadedToken(state) {
         return state.token;
+      },
+      isAuthenticated(state) {
+        return state.token != null;
       }
     }
   });

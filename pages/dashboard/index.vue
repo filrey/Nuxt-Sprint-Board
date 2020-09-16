@@ -14,6 +14,7 @@ export default {
   components: {
     TicketList,
   },
+  // middleware: "auth",
   // asyncData(context, callback) {
   //   callback(null, {
   //     tickets: [
