@@ -7,15 +7,18 @@
 <script>
 import axios from "axios";
 export default {
+  name: "create",
   methods: {
     onSubmit() {
-      axios
-        .post("https://agile-sprint-board.firebaseio.com/test.json", {
+      this.$store
+        .dispatch("newTicket", {
           title: "hello",
           updatedDate: new Date(),
         })
-        .then((result) => console.log(result))
-        .catch((e) => console.log(e));
+        .then(() => {
+          this.$router.push("/dashboard");
+        })
+        .catch();
     },
   },
 };

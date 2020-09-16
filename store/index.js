@@ -57,6 +57,16 @@ const createStore = () => {
             vuexContext.commit("setToken", result.data.idToken);
           })
           .catch(e => console.log(e));
+      },
+      newTicket(vuexContext, ticketData) {
+        return axios
+          .post(
+            "https://agile-sprint-board.firebaseio.com/test.json?auth=" +
+              vuexContext.state.token,
+            ticketData
+          )
+          .then(result => console.log(result))
+          .catch(e => console.log(e));
       }
     },
     getters: {
@@ -65,6 +75,9 @@ const createStore = () => {
       },
       loadedUser(state) {
         return state.user;
+      },
+      loadedToken(state) {
+        return state.token;
       }
     }
   });
