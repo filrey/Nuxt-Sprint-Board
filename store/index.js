@@ -5,7 +5,11 @@ import Cookie from "js-cookie";
 const createStore = () => {
   return new Vuex.Store({
     state: {
-      user: "Filiberto Reyes",
+      user: {
+        name: "Filiberto Reyes",
+        email: null,
+        displayName: "FilRey"
+      },
       loadedTickets: [],
       loadedTest: [],
       token: null
@@ -18,7 +22,10 @@ const createStore = () => {
         state.loadedTest = test;
       },
       setUser(state, user) {
-        state.loadedUser = user;
+        state.user = user;
+      },
+      setEmail(state, email) {
+        state.user.email = email;
       },
       setToken(state, token) {
         state.token = token;
@@ -61,10 +68,13 @@ const createStore = () => {
             let expDate = new Date().getTime() + +result.data.expiresIn * 1000;
             console.log(result);
             vuexContext.commit("setToken", result.data.idToken);
+            vuexContext.commit("setEmail", result.data.email);
             localStorage.setItem("token", result.data.idToken);
             localStorage.setItem("tokenExpiration", expDate);
+            localStorage.setItem("email", result.data.email);
             Cookie.set("jwt", result.data.idToken);
             Cookie.set("expirationDate", expDate);
+            Cookie.set("email", result.data.email);
           })
           .catch(e => console.log(e));
       },
@@ -81,6 +91,7 @@ const createStore = () => {
       initAuth(vuexContext, req) {
         let token;
         let expirationDate;
+        let email;
         if (req) {
           if (!req.headers.cookie) {
             return;
@@ -97,9 +108,14 @@ const createStore = () => {
             .split(";")
             .find(c => c.trim().startsWith("expirationDate="))
             .split("=")[1];
+          email = req.headers.cookie
+            .split(";")
+            .find(c => c.trim().startsWith("email="))
+            .split("=")[1];
         } else {
           token = localStorage.getItem("token");
           expirationDate = localStorage.getItem("tokenExpiration");
+          email = localStorage.getItem("email");
         }
         if (new Date().getTime() > +expirationDate || !token) {
           console.log("No token or invalid token");
@@ -108,14 +124,17 @@ const createStore = () => {
         }
 
         vuexContext.commit("setToken", token);
+        vuexContext.commit("setEmail", email);
       },
       logout(vuexContext) {
         vuexContext.commit("clearToken");
         Cookie.remove("jwt");
         Cookie.remove("expirationDate");
+        Cookie.remove("email");
         if (process.client) {
           localStorage.removeItem("token");
           localStorage.removeItem("tokenExpiration");
+          localStorage.removeItem("email");
         }
       }
     },
