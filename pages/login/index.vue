@@ -76,6 +76,7 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-btn @click.prevent="onLogout()" color="red">Logout</v-btn>
     </v-container>
   </div>
 </template>
@@ -88,7 +89,7 @@ export default {
   data() {
     return {
       email: "",
-      password: "",
+      password: ""
     };
   },
   methods: {
@@ -100,25 +101,29 @@ export default {
           {
             email: this.email,
             password: this.password,
-            returnSecureToken: true,
+            returnSecureToken: true
           }
         )
-        .then((result) => {
+        .then(result => {
           console.log(result);
         })
-        .catch((e) => console.log(e));
+        .catch(e => console.log(e));
     },
     onLogin() {
       this.$store
         .dispatch("authenticateUser", {
           email: this.email,
-          password: this.password,
+          password: this.password
         })
         .then(() => {
           this.$router.push("/dashboard");
         })
         .catch();
     },
-  },
+    onLogout() {
+      this.$store.dispatch("logout");
+      this.$router.push("/login");
+    }
+  }
 };
 </script>
