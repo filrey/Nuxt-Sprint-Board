@@ -88,6 +88,16 @@ const createStore = () => {
           .then(result => console.log(result))
           .catch(e => console.log(e));
       },
+      newProject(vuexContext, projectData) {
+        return axios
+          .post(
+            "https://agile-sprint-board.firebaseio.com/projects.json?auth=" +
+              vuexContext.state.token,
+            projectData
+          )
+          .then(result => console.log("Res from newProject: " + result))
+          .catch(e => console.log(e));
+      },
       initAuth(vuexContext, req) {
         let token;
         let expirationDate;

@@ -32,7 +32,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ["~assets/styles/main.css"],
   /*
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
@@ -79,5 +79,9 @@ export default {
   build: {},
   env: {
     fbAPIKey: "AIzaSyAuOs2rQBFVMhWzqLwlASCo6oaFREApLzo"
+  },
+  transition: {
+    name: "fade",
+    mode: "out-in"
   }
 };
