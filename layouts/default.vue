@@ -87,7 +87,7 @@ export default {
           to: "/demo",
         },
         {
-          icon: "mdi-face",
+          icon: "mdi-plus",
           title: "Create",
           to: "/create",
         },

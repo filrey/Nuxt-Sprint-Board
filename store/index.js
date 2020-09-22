@@ -12,6 +12,7 @@ const createStore = () => {
       },
       loadedTickets: [],
       loadedTest: [],
+      loadedProjects: [],
       token: null
     },
     mutations: {
@@ -20,6 +21,9 @@ const createStore = () => {
       },
       setTest(state, test) {
         state.loadedTest = test;
+      },
+      setProjects(state, projects) {
+        state.loadedProjects = projects;
       },
       setUser(state, user) {
         state.user = user;
@@ -44,6 +48,16 @@ const createStore = () => {
               testArray.push({ ...res.data[key], id: key });
             }
             vuexContext.commit("setTest", testArray);
+            return axios.get(
+              "https://agile-sprint-board.firebaseio.com/projects.json"
+            );
+          })
+          .then(res => {
+            const projectsArray = [];
+            for (const key in res.data) {
+              projectsArray.push({ ...res.data[key], id: key });
+            }
+            vuexContext.commit("setProjects", projectsArray);
           })
           .catch(e => context.error(e));
       },
@@ -151,6 +165,9 @@ const createStore = () => {
     getters: {
       loadedTickets(state) {
         return state.loadedTickets;
+      },
+      loadedProjects(state) {
+        return state.loadedProjects;
       },
       loadedUser(state) {
         return state.user;
