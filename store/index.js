@@ -11,6 +11,11 @@ const createStore = () => {
         email: null,
         displayName: "FilRey"
       },
+      snackbar: {
+        message: "No Message",
+        color: "",
+        value: false
+      },
       loadedTickets: [],
       loadedTest: [],
       loadedProjects: [],
@@ -40,11 +45,30 @@ const createStore = () => {
       setToken(state, token) {
         state.token = token;
       },
+      setSnackbar(state, context) {
+        state.snackbar.message = context.message;
+        state.snackbar.color = context.color;
+        state.snackbar.value = true;
+        setTimeout(() => {
+          state.snackbar.value = false;
+        }, 5000);
+      },
       clearToken(state) {
         state.token = null;
+      },
+      clearUser(state) {
+        state.email = null;
+        state.uid = null;
+      },
+      clearSnackbar(state) {
+        state.snackbar.color = "";
+        state.snackbar.value = false;
       }
     },
     actions: {
+      toggleSnackbar(vuexContext, message, color) {
+        vuexContext.commit("setSnackbar", message, color);
+      },
       nuxtServerInit(vuexContext, context) {
         return axios
           .get("https://agile-sprint-board.firebaseio.com/test.json")
@@ -166,6 +190,7 @@ const createStore = () => {
       },
       logout(vuexContext) {
         vuexContext.commit("clearToken");
+        vuexContext.commit("clearUser");
         Cookie.remove("jwt");
         Cookie.remove("expirationDate");
         Cookie.remove("email");
@@ -194,6 +219,15 @@ const createStore = () => {
       },
       isAuthenticated(state) {
         return state.token != null;
+      },
+      loadedSnackbarMessage(state) {
+        return state.snackbar.message;
+      },
+      loadedSnackbarValue(state) {
+        return state.snackbar.value;
+      },
+      loadedSnackbarColor(state) {
+        return state.snackbar.color;
       }
     }
   });

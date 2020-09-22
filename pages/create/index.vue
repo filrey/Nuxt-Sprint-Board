@@ -15,6 +15,8 @@
       ></v-text-field>
       <v-btn @click.prevent="onAddProject()" color="green">Add Project</v-btn>
     </v-form>
+    <h2>Test Snackbar</h2>
+    <v-btn @click.prevent="onTestSnackbar()" color="grey">Test Snackbar</v-btn>
   </div>
 </template>
 <script>
@@ -47,6 +49,12 @@ export default {
         submitters: ["Sub1", "Sub2", "Sub3"],
       });
       console.log("Project Added");
+    },
+    onTestSnackbar() {
+      this.$store.dispatch("toggleSnackbar", {
+        message: "Testing Snackbar...",
+        color: "",
+      });
     },
   },
 };

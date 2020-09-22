@@ -38,6 +38,12 @@
         <nuxt />
       </v-container>
     </v-main>
+    <v-snackbar v-model="showSnackbar" :color="this.snackColor" shaped bottom>
+      {{message}}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="showSnackbar = false">Close</v-btn>
+      </template>
+    </v-snackbar>
     <v-footer :absolute="!fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
@@ -54,9 +60,30 @@ export default {
     isAuthenticated() {
       return this.$store.getters.isAuthenticated;
     },
+    snackbarMessage() {
+      return this.$store.getters.loadedSnackbarMessage;
+    },
+    snackbarValue() {
+      return this.$store.getters.loadedSnackbarValue;
+    },
+    snackbarColor() {
+      return this.$store.getters.loadedSnackbarColor;
+    },
+  },
+  watch: {
+    snackbarValue(newValue, oldValue) {
+      if (this.snackbarValue) {
+        this.message = this.snackbarMessage;
+        this.snackColor = this.snackbarColor;
+        this.showSnackbar = true;
+      }
+    },
   },
   data() {
     return {
+      showSnackbar: false,
+      snackColor: "",
+      message: "",
       clipped: false,
       drawer: false,
       fixed: false,
