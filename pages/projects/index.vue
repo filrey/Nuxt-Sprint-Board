@@ -32,7 +32,7 @@
       <v-card-title>Developers</v-card-title>
 
       <v-card-text>
-        <v-chip-group v-model="selection" active-class="deep-purple accent-4 white--text" column>
+        <v-chip-group v-model="selectedDev" active-class="deep-purple accent-4 white--text" column>
           <v-chip v-for="dev in item.devs" :key="dev.id">{{dev}}</v-chip>
         </v-chip-group>
       </v-card-text>
@@ -42,7 +42,7 @@
       <v-card-title>Submitters</v-card-title>
 
       <v-card-text>
-        <v-chip-group v-model="selection" active-class="green accent-4 white--text" column>
+        <v-chip-group v-model="selectedSub" active-class="green accent-4 white--text" column>
           <v-chip v-for="sub in item.submitters" :key="sub.id">{{sub}}</v-chip>
         </v-chip-group>
       </v-card-text>
@@ -62,7 +62,7 @@ export default {
     },
   },
   data() {
-    return { loading: false };
+    return { loading: false, selectedDev: "", selectedSub: "" };
   },
   methods: {
     onOverview() {

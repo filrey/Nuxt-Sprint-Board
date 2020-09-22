@@ -7,6 +7,7 @@ const createStore = () => {
     state: {
       user: {
         name: "Filiberto Reyes",
+        uid: null,
         email: null,
         displayName: "FilRey"
       },
@@ -25,11 +26,16 @@ const createStore = () => {
       setProjects(state, projects) {
         state.loadedProjects = projects;
       },
-      setUser(state, user) {
-        state.user = user;
+      setUser(state, userData) {
+        state.user.email = userData.email;
+        state.user.token = userData.idToken;
+        state.user.uid = userData.localId;
       },
       setEmail(state, email) {
         state.user.email = email;
+      },
+      setUid(state, id) {
+        state.user.uid = id;
       },
       setToken(state, token) {
         state.token = token;
@@ -81,14 +87,15 @@ const createStore = () => {
           .then(result => {
             let expDate = new Date().getTime() + +result.data.expiresIn * 1000;
             console.log(result);
-            vuexContext.commit("setToken", result.data.idToken);
-            vuexContext.commit("setEmail", result.data.email);
+            vuexContext.commit("setUser", result.data);
             localStorage.setItem("token", result.data.idToken);
             localStorage.setItem("tokenExpiration", expDate);
             localStorage.setItem("email", result.data.email);
+            localStorage.setItem("uid", result.data.localId);
             Cookie.set("jwt", result.data.idToken);
             Cookie.set("expirationDate", expDate);
             Cookie.set("email", result.data.email);
+            Cookie.set("uid", result.data.localId);
           })
           .catch(e => console.log(e));
       },
@@ -116,6 +123,7 @@ const createStore = () => {
         let token;
         let expirationDate;
         let email;
+        let uid;
         if (req) {
           if (!req.headers.cookie) {
             return;
@@ -136,10 +144,15 @@ const createStore = () => {
             .split(";")
             .find(c => c.trim().startsWith("email="))
             .split("=")[1];
+          uid = req.headers.cookie
+            .split(";")
+            .find(c => c.trim().startsWith("uid="))
+            .split("=")[1];
         } else {
           token = localStorage.getItem("token");
           expirationDate = localStorage.getItem("tokenExpiration");
           email = localStorage.getItem("email");
+          uid = localStorage.getItem("uid");
         }
         if (new Date().getTime() > +expirationDate || !token) {
           console.log("No token or invalid token");
@@ -149,16 +162,20 @@ const createStore = () => {
 
         vuexContext.commit("setToken", token);
         vuexContext.commit("setEmail", email);
+        vuexContext.commit("setUid", uid);
       },
       logout(vuexContext) {
         vuexContext.commit("clearToken");
         Cookie.remove("jwt");
         Cookie.remove("expirationDate");
         Cookie.remove("email");
+        Cookie.remove("uid");
+
         if (process.client) {
           localStorage.removeItem("token");
           localStorage.removeItem("tokenExpiration");
           localStorage.removeItem("email");
+          localStorage.removeItem("uid");
         }
       }
     },
