@@ -48,7 +48,10 @@ export default {
         devs: ["Filiberto", "Jessica", "Steve"],
         submitters: ["Sub1", "Sub2", "Sub3"],
       });
-      console.log("Project Added");
+      this.$store.dispatch("toggleSnackbar", {
+        message: "New Project created",
+        color: "success",
+      });
     },
     onTestSnackbar() {
       this.$store.dispatch("toggleSnackbar", {

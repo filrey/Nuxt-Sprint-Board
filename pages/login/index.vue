@@ -89,7 +89,7 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
     };
   },
   methods: {
@@ -101,29 +101,41 @@ export default {
           {
             email: this.email,
             password: this.password,
-            returnSecureToken: true
+            returnSecureToken: true,
           }
         )
-        .then(result => {
+        .then((result) => {
+          this.$store.dispatch("toggleSnackbar", {
+            message: "You are now registered",
+            color: "success",
+          });
           console.log(result);
         })
-        .catch(e => console.log(e));
+        .catch((e) => console.log(e));
     },
     onLogin() {
       this.$store
         .dispatch("authenticateUser", {
           email: this.email,
-          password: this.password
+          password: this.password,
         })
         .then(() => {
+          this.$store.dispatch("toggleSnackbar", {
+            message: "Login Successful",
+            color: "success",
+          });
           this.$router.push("/dashboard");
         })
         .catch();
     },
     onLogout() {
+      this.$store.dispatch("toggleSnackbar", {
+        message: "You are now logged out",
+        color: "info",
+      });
       this.$store.dispatch("logout");
       this.$router.push("/login");
-    }
-  }
+    },
+  },
 };
 </script>
