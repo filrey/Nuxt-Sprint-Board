@@ -1,6 +1,10 @@
 <template>
   <div>
-    <section>Hero</section>
+    <section>
+      <v-parallax height="300" src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg">
+        <h1>Agile Sprint Board</h1>
+      </v-parallax>
+    </section>
   </div>
 </template>
 

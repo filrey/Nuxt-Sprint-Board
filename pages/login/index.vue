@@ -136,7 +136,7 @@ export default {
     onLogout() {
       this.$store.dispatch("toggleSnackbar", {
         message: "You are now logged out",
-        color: "info",
+        color: "success",
       });
       this.$store.dispatch("logout");
       this.$router.push("/login");

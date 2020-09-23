@@ -7,6 +7,7 @@
       :dark="'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)' !== 'rgba(228, 226, 226, 1), rgba(255, 255, 255, 0.7)'"
       app
     >
+      <!-- USER AVATAR AND NAME -->
       <v-list dense nav>
         <v-list-item>
           <v-list-item-avatar class="align-self-center" color="white" contain>
@@ -17,13 +18,14 @@
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title v-text="loadedUser.email || 'No User'" />
+            <v-list-item-title v-text="loadedUser.email || 'Guest'" />
           </v-list-item-content>
         </v-list-item>
       </v-list>
 
       <v-divider class="mb-2"></v-divider>
 
+      <!-- NAV LINKS -->
       <v-list expand nav>
         <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
           <v-list-item-action>
@@ -36,26 +38,26 @@
       </v-list>
     </v-navigation-drawer>
 
+    <!-- APP-BAR -->
     <v-app-bar :clipped-left="clipped" absolute app color="transparent" flat>
-      <v-btn class="mr-3" @click.stop="drawer = !drawer" elevation="1" tile>
+      <v-btn class="mr-3" @click.stop="drawer = !drawer" elevation="1" color="white" tile>
         <v-icon>mdi-view-quilt</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-avatar color="indigo">
-        <v-icon dark>mdi-account-circle</v-icon>
-      </v-avatar>User Name
     </v-app-bar>
 
-    <v-main class="mx-1 pb-0">
+    <!-- MAIN_VIEW AND FOOTER-->
+    <v-main class="main mx-1 pb-0">
       <v-container>
         <nuxt />
-        <v-footer :absolute="!fixed" app>
+        <v-footer :absolute="!fixed" color="#eee" app>
           <span>&copy; {{ new Date().getFullYear() }}</span>
         </v-footer>
       </v-container>
     </v-main>
 
+    <!-- SNACKBAR -->
     <v-snackbar v-model="showSnackbar" :color="this.snackColor" shaped bottom>
       {{message}}
       <template v-slot:action="{ attrs }">
@@ -151,5 +153,8 @@ export default {
 <style lang="css" scoped>
 .drawer {
   max-height: 100% !important;
+}
+.main {
+  background-color: #eee;
 }
 </style>
