@@ -56,6 +56,7 @@
 <script>
 export default {
   name: "Projects",
+  middleware: ["check-auth", "auth"],
   computed: {
     projects() {
       return this.$store.getters.loadedProjects;

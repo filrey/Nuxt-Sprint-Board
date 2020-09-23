@@ -126,7 +126,12 @@ export default {
           });
           this.$router.push("/dashboard");
         })
-        .catch();
+        .catch((e) => {
+          this.$store.dispatch("toggleSnackbar", {
+            message: "Invalid email or password",
+            color: "error",
+          });
+        });
     },
     onLogout() {
       this.$store.dispatch("toggleSnackbar", {

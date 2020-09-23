@@ -121,7 +121,12 @@ const createStore = () => {
             Cookie.set("email", result.data.email);
             Cookie.set("uid", result.data.localId);
           })
-          .catch(e => console.log(e));
+          .catch(e => {
+            this.$store.dispatch("toggleSnackbar", {
+              message: "Invalid email or password",
+              color: "error"
+            });
+          });
       },
       newTicket(vuexContext, ticketData) {
         return axios
