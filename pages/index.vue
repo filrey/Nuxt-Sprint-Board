@@ -1,8 +1,8 @@
 <template>
   <div>
     <section>
-      <v-parallax height="300" src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg">
-        <h1>Agile Sprint Board</h1>
+      <v-parallax height="450" src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg">
+        <h1>Nuxt Sprint Board</h1>
       </v-parallax>
     </section>
   </div>

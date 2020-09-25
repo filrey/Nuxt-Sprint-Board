@@ -4,7 +4,10 @@
       class="pb-0 drawer"
       v-model="drawer"
       :src="require('@/assets/images/dock.jpg')"
-      :dark="'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)' !== 'rgba(228, 226, 226, 1), rgba(255, 255, 255, 0.7)'"
+      :dark="
+        'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)' !==
+        'rgba(228, 226, 226, 1), rgba(255, 255, 255, 0.7)'
+      "
       app
     >
       <!-- USER AVATAR AND NAME -->
@@ -27,7 +30,13 @@
 
       <!-- NAV LINKS -->
       <v-list expand nav>
-        <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
+        <v-list-item
+          v-for="(item, i) in items"
+          :key="i"
+          :to="item.to"
+          router
+          exact
+        >
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
@@ -40,7 +49,13 @@
 
     <!-- APP-BAR -->
     <v-app-bar :clipped-left="clipped" absolute app color="transparent" flat>
-      <v-btn class="mr-3" @click.stop="drawer = !drawer" elevation="1" color="white" tile>
+      <v-btn
+        class="mr-3"
+        @click.stop="drawer = !drawer"
+        elevation="1"
+        color="white"
+        tile
+      >
         <v-icon>mdi-view-quilt</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" />
@@ -59,9 +74,11 @@
 
     <!-- SNACKBAR -->
     <v-snackbar v-model="showSnackbar" :color="this.snackColor" shaped bottom>
-      {{message}}
+      {{ message }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="showSnackbar = false">Close</v-btn>
+        <v-btn color="white" text v-bind="attrs" @click="showSnackbar = false"
+          >Close</v-btn
+        >
       </template>
     </v-snackbar>
   </v-app>

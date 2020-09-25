@@ -3,8 +3,14 @@
     <v-row justify="center">
       <v-col cols="12" md="8">
         <v-card>
-          <v-sheet class="pa-7 mx-3 rounded-lg" color="#4caf50" max-width="100%" elevation="5">
-            <v-icon size="32" dark>mdi-account</v-icon>
+          <v-sheet
+            class="pa-7 mx-3 rounded-lg"
+            color="#4caf50"
+            max-width="100%"
+            elevation="5"
+            dark
+          >
+            <v-text class="text-h4">Edit Profile</v-text>
           </v-sheet>
 
           <v-form>
@@ -43,7 +49,11 @@
                 </v-col>
 
                 <v-col cols="12" md="4">
-                  <v-text-field class="purple-input" label="Postal Code" type="number" />
+                  <v-text-field
+                    class="purple-input"
+                    label="Postal Code"
+                    type="number"
+                  />
                 </v-col>
 
                 <v-col cols="12">
@@ -69,12 +79,18 @@
             <v-icon dark>mdi-account-circle</v-icon>
           </v-avatar>
           <v-card-text class="text-center">
-            <h4 class="display-2 font-weight-light mb-3 black--text">Filiberto Reyes</h4>
-            <h6 class="display-1 mb-1 grey--text">Owner</h6>
+            <h4 class="display-2 font-weight-light mb-3 black--text">
+              {{ user.name }}
+            </h4>
+            <h6 class="display-1 mb-1 grey--text">{{ user.email }}</h6>
 
-            <p
-              class="font-weight-light grey--text"
-            >Lorem ipsum dolor sit amet, consectetur adipisicing elit. Perspiciatis incidunt nesciunt neque. Tenetur amet repellat molestias unde. Consequatur velit reprehenderit earum sunt molestiae, blanditiis aperiam culpa minima explicabo reiciendis. Quos.</p>
+            <p class="font-weight-light grey--text">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Perspiciatis incidunt nesciunt neque. Tenetur amet repellat
+              molestias unde. Consequatur velit reprehenderit earum sunt
+              molestiae, blanditiis aperiam culpa minima explicabo reiciendis.
+              Quos.
+            </p>
 
             <v-btn color="success" rounded class="mr-0">Follow</v-btn>
           </v-card-text>
@@ -88,6 +104,11 @@
 export default {
   name: "Profile",
   middleware: ["check-auth", "auth"],
+  computed: {
+    user() {
+      return this.$store.getters.loadedUser;
+    },
+  },
   data() {
     return {};
   },
