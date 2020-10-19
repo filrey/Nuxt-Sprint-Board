@@ -60,6 +60,7 @@
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
+      <v-btn v-if="this.isAuthenticated" @click.prevent="onLogout()" tile>Logout</v-btn>
     </v-app-bar>
 
     <!-- MAIN_VIEW AND FOOTER-->
@@ -111,6 +112,16 @@ export default {
         this.snackColor = this.snackbarColor;
         this.showSnackbar = true;
       }
+    },
+  },
+  methods: {
+    onLogout() {
+      this.$store.dispatch("toggleSnackbar", {
+        message: "You are now logged out",
+        color: "success",
+      });
+      this.$store.dispatch("logout");
+      this.$router.push("/login");
     },
   },
   data() {

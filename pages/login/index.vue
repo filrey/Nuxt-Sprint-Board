@@ -76,7 +76,6 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-btn @click.prevent="onLogout()" color="red">Logout</v-btn>
     </v-container>
   </div>
 </template>
@@ -132,14 +131,6 @@ export default {
             color: "error",
           });
         });
-    },
-    onLogout() {
-      this.$store.dispatch("toggleSnackbar", {
-        message: "You are now logged out",
-        color: "success",
-      });
-      this.$store.dispatch("logout");
-      this.$router.push("/login");
     },
   },
 };
