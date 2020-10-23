@@ -10,6 +10,12 @@
       "
       app
     >
+    <template v-slot:img="props">
+      <v-img
+        :gradient="`to bottom, rgba(0, 0, 0, .9), rgba(0, 0, 0, .3)`"
+        v-bind="props"
+      />
+    </template>
       <!-- USER AVATAR AND NAME -->
       <v-list dense nav>
         <v-list-item>
