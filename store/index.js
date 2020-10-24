@@ -128,12 +128,12 @@ const createStore = () => {
             });
           });
       },
-      newTicket(vuexContext, ticketData) {
+      newTicket(vuexContext, contextData) {
         return axios
           .post(
-            "https://agile-sprint-board.firebaseio.com/test.json?auth=" +
+            "https://agile-sprint-board.firebaseio.com/projects/"+ contextData.projectId + "/tickets.json?auth=" +
               vuexContext.state.token,
-            ticketData
+            contextData.ticketData
           )
           .then(result => console.log(result))
           .catch(e => console.log(e));
