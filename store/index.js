@@ -135,7 +135,11 @@ const createStore = () => {
               vuexContext.state.token,
             contextData.ticketData
           )
-          .then(result => console.log(result))
+          .then(result => {
+            this.$store.dispatch("toggleSnackbar", {
+            message: "Tickets",
+            color: "success"
+          });})
           .catch(e => console.log(e));
       },
       newProject(vuexContext, projectData) {

@@ -196,11 +196,12 @@ export default {
   },
   methods: {
     onSubmitTicket() {
-      console.log('Ticket Submitted')
       this.$store.dispatch('newTicket', {
         ticketData: this.ticket,
         projectId: this.$route.params.id
       })
+
+      // this.project.tickets.push(this.ticket)
       this.ticket.title = ''
       this.ticket.description = ''
       this.ticket.priority = ''
