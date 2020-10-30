@@ -136,11 +136,12 @@ const createStore = () => {
             contextData.ticketData
           )
           .then(result => {
-            this.$store.dispatch("toggleSnackbar", {
-            message: "Tickets",
-            color: "success"
-          });})
-          .catch(e => console.log(e));
+            vuexContext.commit("setSnackbar", {message: 'Ticket submitted', color: 'success'}); 
+
+          })
+          .catch(e => {
+            vuexContext.commit("setSnackbar", {message: 'Error submitting ticket', color: 'error'}); 
+          });
       },
       newProject(vuexContext, projectData) {
         return axios

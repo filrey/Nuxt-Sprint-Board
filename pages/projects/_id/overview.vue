@@ -194,6 +194,7 @@ export default {
       );
     },
   },
+  middleware: ["check-auth", "auth"],
   methods: {
     onSubmitTicket() {
       this.$store.dispatch('newTicket', {
@@ -201,7 +202,7 @@ export default {
         projectId: this.$route.params.id
       })
 
-      // this.project.tickets.push(this.ticket)
+      
       this.ticket.title = ''
       this.ticket.description = ''
       this.ticket.priority = ''
