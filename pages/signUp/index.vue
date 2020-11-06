@@ -5,10 +5,10 @@
         <v-col cols="12" md="4">
           <v-card class="px-5 py-6 text-center" elevation="1">
             <v-card-title class="display-1 mb-2 justify-center">
-              Welcome
+              Create Account
             </v-card-title>
             <v-card-subtitle>
-              Sign in to continue
+              Start building
             </v-card-subtitle>
             <v-form>
               <v-text-field
@@ -35,18 +35,18 @@
             <v-spacer></v-spacer>
             <v-btn
               class="justify-center"
-              @click.prevent="onLogin()"
+              @click.prevent="onSignup()"
               color="primary"
               height="50px"
               max-width="100%"
               block
-              >Login</v-btn
+              >Create Account</v-btn
             >
           </v-card>
           <div class="text-center mt-6">
-            Don't have an account?
-            <a href="/signUp" class="font-weight-bold">
-              Create one here
+            Already have an account?
+            <a href="/login" class="font-weight-bold">
+              Sign in
             </a>
           </div>
         </v-col>
@@ -58,8 +58,7 @@
 <script>
 import axios from "axios";
 export default {
-  name: "Login",
-  components: {},
+  name: "SignUp",
   data() {
     return {
       email: "",
@@ -67,25 +66,25 @@ export default {
     };
   },
   methods: {
-    onLogin() {
-      this.$store
-        .dispatch("authenticateUser", {
-          email: this.email,
-          password: this.password
-        })
-        .then(() => {
+    onSignup() {
+      axios
+        .post(
+          "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" +
+            process.env.fbAPIKey,
+          {
+            email: this.email,
+            password: this.password,
+            returnSecureToken: true
+          }
+        )
+        .then(result => {
           this.$store.dispatch("toggleSnackbar", {
-            message: "Login Successful",
+            message: "You are now registered",
             color: "success"
           });
-          this.$router.push("/dashboard");
+          console.log(result);
         })
-        .catch(e => {
-          this.$store.dispatch("toggleSnackbar", {
-            message: "Invalid email or password",
-            color: "error"
-          });
-        });
+        .catch(e => console.log(e));
     }
   }
 };

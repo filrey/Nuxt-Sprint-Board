@@ -189,6 +189,6 @@ export default {
   max-height: 100% !important;
 }
 .main {
-  background-color: #eee;
+  background-color: #f5f6f7;
 }
 </style>
