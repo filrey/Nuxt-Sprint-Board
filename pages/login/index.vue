@@ -42,6 +42,19 @@
               block
               >Login</v-btn
             >
+            <v-card-subtitle>
+              Or Sign in With
+            </v-card-subtitle>
+            <v-btn
+              class="justify-center"
+              @click.prevent="onGoogleLogin()"
+              color="secondary"
+              height="50px"
+              max-width="100%"
+              block
+            >
+              <v-icon class="mr-2">mdi-google</v-icon> Google</v-btn
+            >
           </v-card>
           <div class="text-center mt-6">
             Don't have an account?
@@ -57,6 +70,7 @@
 
 <script>
 import axios from "axios";
+import firebase from "firebase";
 export default {
   name: "Login",
   components: {},
@@ -67,6 +81,30 @@ export default {
     };
   },
   methods: {
+    onGoogleLogin() {
+      this.provider = new firebase.auth.GoogleAuthProvider();
+      firebase
+        .auth()
+        .signInWithPopup(this.provider)
+        .then(result => {
+          let userData = {
+            email: result.user.email,
+            token: result.credential.idToken,
+            uid: result.user.uid,
+            displayName: result.user.displayName,
+            photoUrl: result.user.photoURL
+          };
+          this.$store.dispatch("authenticateGoogleUser", userData);
+          console.log(result);
+          this.$router.push("/");
+        })
+        .catch(e => {
+          this.$store.dispatch("toggleSnackbar", {
+            message: "Google Auth Error",
+            color: "error"
+          });
+        });
+    },
     onLogin() {
       this.$store
         .dispatch("authenticateUser", {

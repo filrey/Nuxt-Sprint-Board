@@ -6,23 +6,26 @@
       :src="require('@/assets/images/dock.jpg')"
       :dark="
         'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)' !==
-        'rgba(228, 226, 226, 1), rgba(255, 255, 255, 0.7)'
+          'rgba(228, 226, 226, 1), rgba(255, 255, 255, 0.7)'
       "
       app
     >
-    <template v-slot:img="props">
-      <v-img
-        :gradient="`to bottom, rgba(0, 0, 0, .9), rgba(0, 0, 0, .3)`"
-        v-bind="props"
-      />
-    </template>
+      <template v-slot:img="props">
+        <v-img
+          :gradient="`to bottom, rgba(0, 0, 0, .9), rgba(0, 0, 0, .3)`"
+          v-bind="props"
+        />
+      </template>
       <!-- USER AVATAR AND NAME -->
       <v-list dense nav>
         <v-list-item>
-          <v-list-item-avatar class="align-self-center" color="white" contain>
+          <v-list-item-avatar class="align-self-center" contain>
             <v-img
-              src="https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico"
-              max-height="30"
+              :src="
+                loadedUser.photoUrl ||
+                  `https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico`
+              "
+              max-height="40"
             />
           </v-list-item-avatar>
 
@@ -66,7 +69,9 @@
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-btn v-if="this.isAuthenticated" @click.prevent="onLogout()" tile>Logout</v-btn>
+      <v-btn v-if="this.isAuthenticated" @click.prevent="onLogout()" tile
+        >Logout</v-btn
+      >
     </v-app-bar>
 
     <!-- MAIN_VIEW AND FOOTER-->
@@ -109,7 +114,7 @@ export default {
     },
     snackbarColor() {
       return this.$store.getters.loadedSnackbarColor;
-    },
+    }
   },
   watch: {
     snackbarValue(newValue, oldValue) {
@@ -118,17 +123,17 @@ export default {
         this.snackColor = this.snackbarColor;
         this.showSnackbar = true;
       }
-    },
+    }
   },
   methods: {
     onLogout() {
       this.$store.dispatch("toggleSnackbar", {
         message: "You are now logged out",
-        color: "success",
+        color: "success"
       });
       this.$store.dispatch("logout");
       this.$router.push("/login");
-    },
+    }
   },
   data() {
     return {
@@ -142,45 +147,45 @@ export default {
         {
           icon: "mdi-apps",
           title: "Welcome",
-          to: "/",
+          to: "/"
         },
         {
           icon: "mdi-account",
           title: "Profile",
-          to: "/profile",
+          to: "/profile"
         },
         {
           icon: "mdi-chevron-right-box-outline",
           title: "Login",
-          to: "/login",
+          to: "/login"
         },
         {
           icon: "mdi-chart-bubble",
           title: "Projects",
-          to: "/projects",
+          to: "/projects"
         },
         {
           icon: "mdi-grid",
           title: "Dashboard",
-          to: "/dashboard",
+          to: "/dashboard"
         },
         {
           icon: "mdi-face",
           title: "Demo",
-          to: "/demo",
+          to: "/demo"
         },
         {
           icon: "mdi-plus",
           title: "Create",
-          to: "/create",
-        },
+          to: "/create"
+        }
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: "Agile-Sprint-Board",
+      title: "Agile-Sprint-Board"
     };
-  },
+  }
 };
 </script>
 

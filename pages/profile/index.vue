@@ -80,7 +80,7 @@
           </v-avatar>
           <v-card-text class="text-center">
             <h4 class="display-2 font-weight-light mb-3 black--text">
-              {{ user.name }}
+              {{ user.displayName }}
             </h4>
             <h6 class="display-1 mb-1 grey--text">{{ user.email }}</h6>
 
@@ -107,10 +107,10 @@ export default {
   computed: {
     user() {
       return this.$store.getters.loadedUser;
-    },
+    }
   },
   data() {
     return {};
-  },
+  }
 };
 </script>

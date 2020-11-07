@@ -9,7 +9,8 @@ const createStore = () => {
         name: "Filiberto Reyes",
         uid: null,
         email: null,
-        displayName: "FilRey"
+        displayName: "FilRey",
+        photoUrl: ''
       },
       snackbar: {
         message: "No Message",
@@ -42,6 +43,9 @@ const createStore = () => {
       setUid(state, id) {
         state.user.uid = id;
       },
+      setPhotoUrl(state, photoUrl){
+        state.user.photoUrl = photoUrl
+      },
       setToken(state, token) {
         state.token = token;
       },
@@ -57,8 +61,10 @@ const createStore = () => {
         state.token = null;
       },
       clearUser(state) {
-        state.email = null;
-        state.uid = null;
+        state.user.email = null;
+        state.user.uid = null;
+        state.user.name = null;
+        state.user.photoUrl = null;
       },
       clearSnackbar(state) {
         state.snackbar.color = "";
@@ -97,6 +103,22 @@ const createStore = () => {
       setUser(vuexContext, user) {
         vuexContext.commit("setUser", user);
       },
+      authenticateGoogleUser(vuexContext, authData){
+        let expDate = new Date().getTime() + +(1*60*60*1000);
+        vuexContext.commit("setUser", authData);
+        vuexContext.commit("setPhotoUrl", authData.photoUrl)
+        localStorage.setItem("token", authData.idToken);
+        localStorage.setItem("tokenExpiration", expDate);
+        localStorage.setItem("email", authData.email);
+        localStorage.setItem("uid", authData.localId);
+        localStorage.setItem("photoUrl", authData.photoUrl);
+        Cookie.set("jwt", authData.idToken);
+        Cookie.set("expirationDate", expDate);
+        Cookie.set("email", authData.email);
+        Cookie.set("uid", authData.localId);
+        Cookie.set("photoUrl", authData.photoUrl);
+
+      },
       authenticateUser(vuexContext, authData) {
         return axios
           .post(
@@ -110,7 +132,6 @@ const createStore = () => {
           )
           .then(result => {
             let expDate = new Date().getTime() + +result.data.expiresIn * 1000;
-            console.log(result);
             vuexContext.commit("setUser", result.data);
             localStorage.setItem("token", result.data.idToken);
             localStorage.setItem("tokenExpiration", expDate);
@@ -158,6 +179,7 @@ const createStore = () => {
         let expirationDate;
         let email;
         let uid;
+        let photoUrl
         if (req) {
           if (!req.headers.cookie) {
             return;
@@ -182,14 +204,22 @@ const createStore = () => {
             .split(";")
             .find(c => c.trim().startsWith("uid="))
             .split("=")[1];
+          photoUrl = req.headers.cookie
+            .split(";")
+            .find(c => c.trim().startsWith("photoUrl="))
+            .split("=")[1];
         } else {
           token = localStorage.getItem("token");
           expirationDate = localStorage.getItem("tokenExpiration");
           email = localStorage.getItem("email");
           uid = localStorage.getItem("uid");
+          photoUrl = localStorage.getItem("photoUrl");
         }
         if (new Date().getTime() > +expirationDate || !token) {
-          console.log("No token or invalid token");
+          vuexContext.dispatch("toggleSnackbar", {
+            message: "Session has expired",
+            color: "error"
+          });
           vuexContext.dispatch("logout");
           return;
         }
@@ -205,12 +235,14 @@ const createStore = () => {
         Cookie.remove("expirationDate");
         Cookie.remove("email");
         Cookie.remove("uid");
+        Cookie.remove("photoUrl");
 
         if (process.client) {
           localStorage.removeItem("token");
           localStorage.removeItem("tokenExpiration");
           localStorage.removeItem("email");
           localStorage.removeItem("uid");
+          localStorage.removeItem("photoUrl");
         }
       }
     },
