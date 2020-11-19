@@ -227,6 +227,7 @@ const createStore = () => {
         vuexContext.commit("setToken", token);
         vuexContext.commit("setEmail", email);
         vuexContext.commit("setUid", uid);
+        vuexContext.commit("setPhotoUrl", photoUrl)
       },
       logout(vuexContext) {
         vuexContext.commit("clearToken");

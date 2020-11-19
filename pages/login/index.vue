@@ -89,8 +89,8 @@ export default {
         .then(result => {
           let userData = {
             email: result.user.email,
-            token: result.credential.idToken,
-            uid: result.user.uid,
+            idToken: result.credential.idToken,
+            localId: result.user.uid,
             displayName: result.user.displayName,
             photoUrl: result.user.photoURL
           };

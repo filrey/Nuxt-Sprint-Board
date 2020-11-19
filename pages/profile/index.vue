@@ -1,99 +1,31 @@
 <template>
   <v-container id="user-profile" fluid tag="section">
     <v-row justify="center">
-      <v-col cols="12" md="8">
-        <v-card>
-          <v-sheet
-            class="pa-7 mx-3 rounded-lg"
-            color="#4caf50"
-            max-width="100%"
-            elevation="5"
-            dark
-          >
-            <v-text class="text-h4">Edit Profile</v-text>
-          </v-sheet>
-
-          <v-form>
-            <v-container class="py-0">
-              <v-row>
-                <v-col cols="12" md="4">
-                  <v-text-field label="Company (disabled)" disabled />
-                </v-col>
-
-                <v-col cols="12" md="4">
-                  <v-text-field class="purple-input" label="User Name" />
-                </v-col>
-
-                <v-col cols="12" md="4">
-                  <v-text-field label="Email Address" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12" md="6">
-                  <v-text-field label="First Name" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12" md="6">
-                  <v-text-field label="Last Name" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12">
-                  <v-text-field label="Adress" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12" md="4">
-                  <v-text-field label="City" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12" md="4">
-                  <v-text-field label="Country" class="purple-input" />
-                </v-col>
-
-                <v-col cols="12" md="4">
-                  <v-text-field
-                    class="purple-input"
-                    label="Postal Code"
-                    type="number"
-                  />
-                </v-col>
-
-                <v-col cols="12">
-                  <v-textarea
-                    class="purple-input"
-                    label="About Me"
-                    value="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                  />
-                </v-col>
-
-                <v-col cols="12" class="text-right">
-                  <v-btn color="success" class="mr-0">Update Profile</v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </v-card>
-      </v-col>
-
-      <v-col cols="12" md="4">
-        <v-card>
-          <v-avatar color="indigo" size="52">
-            <v-icon dark>mdi-account-circle</v-icon>
-          </v-avatar>
-          <v-card-text class="text-center">
-            <h4 class="display-2 font-weight-light mb-3 black--text">
-              {{ user.displayName }}
-            </h4>
-            <h6 class="display-1 mb-1 grey--text">{{ user.email }}</h6>
-
-            <p class="font-weight-light grey--text">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Perspiciatis incidunt nesciunt neque. Tenetur amet repellat
-              molestias unde. Consequatur velit reprehenderit earum sunt
-              molestiae, blanditiis aperiam culpa minima explicabo reiciendis.
-              Quos.
-            </p>
-
-            <v-btn color="success" rounded class="mr-0">Follow</v-btn>
-          </v-card-text>
+      <v-col cols="12" md="12">
+        <v-card class="py-3 px-5">
+          <v-card-title>Profile</v-card-title>
+          <v-row>
+            <v-col cols="12" md="1">
+              <v-avatar class="profile" color="grey" size="100" tile>
+                <v-img :src="user.photoUrl"></v-img>
+              </v-avatar>
+              <v-chip class=" mt-3 d-flex justify-center" color="red" dark
+                >Administrator</v-chip
+              >
+            </v-col>
+            <v-col cols="12" md="11">
+              <v-text-field
+                label="Name"
+                v-model="user.name"
+                disabled
+              ></v-text-field>
+              <v-text-field
+                label="Display Name"
+                v-model="user.displayName"
+              ></v-text-field>
+              <v-btn color="primary">Save</v-btn>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
     </v-row>
