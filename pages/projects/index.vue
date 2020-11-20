@@ -2,18 +2,14 @@
   <div>
     <h1>Projects</h1>
     <v-row>
-      <v-col
-      cols="12"
-      sm="6"
-      v-for="item in projects"
-      :key="item.id">
-        <v-card
-          class="mx-auto my-12"
-          max-width="750"
-        >
+      <v-col cols="12" sm="6" v-for="item in projects" :key="item.id">
+        <v-card class="mx-auto my-12" max-width="750">
           <v-img
             height="250"
-            src="https://images.unsplash.com/photo-1600195076446-435ebd85d816?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2134&q=80"
+            :src="
+              item.bannerUrl ||
+                'https://cdn.vuetifyjs.com/images/parallax/material2.jpg'
+            "
           ></v-img>
 
           <v-card-title>{{ item.name }}</v-card-title>
@@ -68,12 +64,14 @@
           </v-card-text>
 
           <v-card-actions>
-            <v-btn color="deep-purple lighten-2" text @click="onOverview(item.id)"
+            <v-btn
+              color="deep-purple lighten-2"
+              text
+              @click="onOverview(item.id)"
               >Overview</v-btn
             >
           </v-card-actions>
         </v-card>
-
       </v-col>
     </v-row>
   </div>
@@ -85,7 +83,7 @@ export default {
   computed: {
     projects() {
       return this.$store.getters.loadedProjects;
-    },
+    }
   },
   data() {
     return { loading: false, selectedDev: "", selectedSub: "" };
@@ -93,7 +91,7 @@ export default {
   methods: {
     onOverview(projectId) {
       this.$router.push("/projects/" + projectId + "/overview");
-    },
-  },
+    }
+  }
 };
 </script>
