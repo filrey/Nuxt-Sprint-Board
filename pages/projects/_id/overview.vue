@@ -1,11 +1,27 @@
 <template>
   <div class="my-3 mx-5">
     <nuxt-link to="/projects"><h2>Back to Projects</h2> </nuxt-link>
-    <v-btn @click="dialog = true" class="ma-2" depressed outlined>
+    <v-btn @click="dialog = true" type="file" class="ma-2" depressed outlined>
       <v-icon>mdi-plus</v-icon>Click to add a ticket</v-btn
     >
 
+    <v-btn @click="onImageUpload()" class="ma-2" depressed outlined>
+      <v-icon>mdi-plus</v-icon>Upload Photo</v-btn
+    >
+    <input type="file" @change="onFileSelected" />
+    <img :src="newImageUrl" height="150" />
+    <v-progress-circular
+      :rotate="360"
+      :size="100"
+      :width="15"
+      :value="uploadValue"
+      color="teal"
+    >
+      {{ uploadValue }}
+    </v-progress-circular>
+
     <v-row>
+      <!-- Activity -->
       <v-col cols="12" md="6">
         <v-card>
           <v-card-title>Activity</v-card-title>
@@ -84,7 +100,7 @@
 
     <v-spacer class="my-7"></v-spacer>
 
-    <!-- Dialog -->
+    <!-- New Ticket Dialog -->
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
@@ -148,6 +164,7 @@
 </template>
 
 <script>
+import firebase from "firebase";
 export default {
   name: "projectOverview",
   computed: {
@@ -166,6 +183,60 @@ export default {
   },
   middleware: ["check-auth", "auth"],
   methods: {
+    onFileSelected(event) {
+      this.selectedFile = event.target.files[0];
+      let fileName = this.selectedFile.name;
+
+      if (fileName.lastIndexOf(".") <= 0) {
+        return alert("Please select a valid file!");
+      }
+
+      const fileReader = new FileReader();
+      fileReader.addEventListener("load", () => {
+        this.newImageUrl = fileReader.result;
+      });
+
+      fileReader.readAsDataURL(event.target.files[0]);
+    },
+    onImageUpload() {
+      const storageRef = firebase
+        .storage()
+        .ref(`${this.selectedFile.name}`)
+        .put(this.selectedFile);
+      storageRef.on(
+        `state_changed`,
+        snapshot => {
+          this.uploadValue =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        },
+        error => {
+          console.log(error.message);
+        },
+        () => {
+          this.uploadValue = 100;
+          storageRef.snapshot.ref.getDownloadURL().then(url => {
+            this.imgUrl = url;
+            console.log(this.imgUrl);
+
+            let post = {
+              photo: this.imgUrl,
+              projectId: this.project.id
+            };
+
+            firebase
+              .database()
+              .ref("PhotoGallery/ProjectBanners")
+              .push(post)
+              .then(response => {
+                console.log(response);
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          });
+        }
+      );
+    },
     onSubmitTicket() {
       this.$store.dispatch("newTicket", {
         ticketData: this.ticket,
@@ -189,6 +260,10 @@ export default {
   },
   data() {
     return {
+      imgUrl: null,
+      uploadValue: 0,
+      newImageUrl: null,
+      selectedFile: null,
       dialog: false,
       ticket: {
         title: "",
@@ -196,12 +271,7 @@ export default {
         priority: "",
         type: ""
       },
-      series: [44, 55, 41, 17, 15],
-      chartOptions: {
-        chart: {
-          type: "donut"
-        }
-      },
+
       personnelHeader: [
         {
           text: "Name",

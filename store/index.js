@@ -174,6 +174,13 @@ const createStore = () => {
           .then(result => console.log("Res from newProject: " + result))
           .catch(e => console.log(e));
       },
+      newImage(vuexContext, imageData){
+        let fbStoreRef = firebase.storage().ref();
+        let imageRef = fbStoreRef.child('images/starter.png')
+        imageRef.put(imageData).then(
+          result => console.log(result)
+        ).catch(e => console.log(e))
+      },
       initAuth(vuexContext, req) {
         let token;
         let expirationDate;

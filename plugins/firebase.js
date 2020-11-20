@@ -17,6 +17,4 @@ if (!firebase.apps.length) {
   app = firebase.initializeApp(firebaseConfig)
 }
 // inject it so it can be accessed as this.$firebase inside the project
-export default (ctx, inject) => {
-  inject('firebase', firebase)
-}
+export default firebase
