@@ -1,6 +1,16 @@
 <template>
   <div class="my-3 mx-5">
     <nuxt-link to="/projects"><h2>Back to Projects</h2> </nuxt-link>
+    <v-parallax
+      height="450"
+      :src="
+        this.project.bannerUrl ||
+          'https://cdn.vuetifyjs.com/images/parallax/material2.jpg'
+      "
+    >
+      <h1>{{ this.project.name }}</h1>
+    </v-parallax>
+
     <v-btn @click="dialog = true" type="file" class="ma-2" depressed outlined>
       <v-icon>mdi-plus</v-icon>Click to add a ticket</v-btn
     >
@@ -225,8 +235,10 @@ export default {
 
             firebase
               .database()
-              .ref("PhotoGallery/ProjectBanners")
-              .push(post)
+              .ref("projects/")
+              .child(this.project.id)
+              .child("bannerUrl")
+              .set(post.photo)
               .then(response => {
                 console.log(response);
               })
