@@ -1,58 +1,66 @@
 <template>
   <div class="my-3 mx-5">
-    <nuxt-link to="/projects"><h2>Back to Projects</h2> </nuxt-link>
+    <v-breadcrumbs :items="breadcrumbs" divider="-"></v-breadcrumbs>
+    <!-- Banner -->
     <v-parallax
+      v-if="this.bannerShow"
       height="450"
       :src="
-        this.project.bannerUrl ||
+        this.imgUrl ||
+          this.project.bannerUrl ||
           'https://cdn.vuetifyjs.com/images/parallax/material2.jpg'
       "
     >
       <h1>{{ this.project.name }}</h1>
+
+      <v-btn
+        @click="bannerEdit = true"
+        class="ma-2 edit-banner"
+        depressed
+        outlined
+        small
+        dark
+      >
+        <v-icon>mdi-plus</v-icon>Edit Banner</v-btn
+      >
     </v-parallax>
 
-    <v-btn @click="dialog = true" type="file" class="ma-2" depressed outlined>
-      <v-icon>mdi-plus</v-icon>Click to add a ticket</v-btn
-    >
-
-    <v-btn @click="onImageUpload()" class="ma-2" depressed outlined>
-      <v-icon>mdi-plus</v-icon>Upload Photo</v-btn
-    >
-    <input type="file" @change="onFileSelected" />
-    <img :src="newImageUrl" height="150" />
-    <v-progress-circular
-      :rotate="360"
-      :size="100"
-      :width="15"
-      :value="uploadValue"
-      color="teal"
-    >
-      {{ uploadValue }}
-    </v-progress-circular>
-
     <v-row>
-      <!-- Activity -->
+      <!-- Tickets -->
       <v-col cols="12" md="6">
         <v-card>
-          <v-card-title>Activity</v-card-title>
-          <v-divider></v-divider>
+          <v-toolbar flat>
+            <v-card-title>Tickets</v-card-title>
 
-          <v-timeline>
-            <v-timeline-item>Filiberto added new Ticket</v-timeline-item>
-            <v-timeline-item class="text-right">
-              Task #2 Priority changed to High
-            </v-timeline-item>
-            <v-timeline-item
-              >Jessica has been added to the project</v-timeline-item
+            <v-spacer></v-spacer>
+
+            <v-btn
+              @click="dialog = true"
+              type="file"
+              class="ma-2"
+              depressed
+              outlined
             >
-            <v-timeline-item class="text-right">
-              Task #17 Marked as completed
-            </v-timeline-item>
-            <v-timeline-item>Filiberto assigned as manager</v-timeline-item>
-            <v-timeline-item class="text-right">
-              Project Creation
-            </v-timeline-item>
-          </v-timeline>
+              <v-icon>mdi-plus</v-icon>New ticket</v-btn
+            >
+          </v-toolbar>
+
+          <v-data-table
+            :headers="ticketHeader"
+            :items="tickets"
+            :items-per-page="5"
+            class="elevation-1"
+          >
+            <template v-slot:item.id="{ item }">
+              {{}}
+            </template>
+
+            <template v-slot:item.priority="{ item }">
+              <v-chip :color="returnPriorityColor(item.priority)" label dark>
+                {{ item.priority }}
+              </v-chip>
+            </template>
+          </v-data-table>
         </v-card>
       </v-col>
 
@@ -83,27 +91,28 @@
         </v-card>
       </v-col>
 
-      <!-- Tickets -->
+      <!-- Activity -->
       <v-col cols="12">
         <v-card>
-          <v-card-title>Tickets</v-card-title>
+          <v-card-title>Activity</v-card-title>
+          <v-divider></v-divider>
 
-          <v-data-table
-            :headers="ticketHeader"
-            :items="tickets"
-            :items-per-page="5"
-            class="elevation-1"
-          >
-            <template v-slot:item.id="{ item }">
-              {{}}
-            </template>
-
-            <template v-slot:item.priority="{ item }">
-              <v-chip :color="returnPriorityColor(item.priority)" label dark>
-                {{ item.priority }}
-              </v-chip>
-            </template>
-          </v-data-table>
+          <v-timeline>
+            <v-timeline-item>Filiberto added new Ticket</v-timeline-item>
+            <v-timeline-item class="text-right">
+              Task #2 Priority changed to High
+            </v-timeline-item>
+            <v-timeline-item
+              >Jessica has been added to the project</v-timeline-item
+            >
+            <v-timeline-item class="text-right">
+              Task #17 Marked as completed
+            </v-timeline-item>
+            <v-timeline-item>Filiberto assigned as manager</v-timeline-item>
+            <v-timeline-item class="text-right">
+              Project Creation
+            </v-timeline-item>
+          </v-timeline>
         </v-card>
       </v-col>
     </v-row>
@@ -170,6 +179,54 @@
         </v-card>
       </v-dialog>
     </v-row>
+
+    <!-- Banner Edit Dialog -->
+    <v-row justify="center">
+      <v-dialog v-model="bannerEdit" persistent max-width="600px">
+        <v-card>
+          <v-card-title>
+            <v-icon class="mr-2">mdi-image</v-icon>
+            <span class="headline">New Banner Image</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <input type="file" @change="onFileSelected" />
+                </v-col>
+                <v-col cols="12">
+                  <img :src="newImageUrl" height="150" width="100%" />
+                </v-col>
+                <v-col cols="12">
+                  <v-progress-linear
+                    color="teal"
+                    buffer-value="0"
+                    :value="uploadValue"
+                    stream
+                  >
+                  </v-progress-linear>
+                </v-col>
+              </v-row>
+            </v-container>
+            <small>*Recommended size is 1200x480px for banners</small>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="bannerEdit = false">
+              Cancel
+            </v-btn>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="onImageUpload()"
+              :disabled="selectedFile == null"
+            >
+              Upload
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
   </div>
 </template>
 
@@ -220,7 +277,11 @@ export default {
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         },
         error => {
-          console.log(error.message);
+          this.$store.dispatch("toggleSnackbar", {
+            message: error.message,
+            color: "error"
+          });
+          // console.log(error.message);
         },
         () => {
           this.uploadValue = 100;
@@ -240,11 +301,25 @@ export default {
               .child("bannerUrl")
               .set(post.photo)
               .then(response => {
-                console.log(response);
+                this.$store.dispatch("toggleSnackbar", {
+                  message: "Banner changed for " + this.project.name,
+                  color: "success"
+                });
               })
               .catch(err => {
-                console.log(err);
+                this.$store.dispatch("toggleSnackbar", {
+                  message: err,
+                  color: "error"
+                });
               });
+
+            this.bannerEdit = false;
+
+            this.newImageUrl = null;
+            this.selectedFile = null;
+
+            this.bannerShow = false;
+            this.bannerShow = true;
           });
         }
       );
@@ -272,6 +347,8 @@ export default {
   },
   data() {
     return {
+      bannerShow: true,
+      bannerEdit: false,
       imgUrl: null,
       uploadValue: 0,
       newImageUrl: null,
@@ -283,6 +360,24 @@ export default {
         priority: "",
         type: ""
       },
+
+      breadcrumbs: [
+        {
+          text: "Home",
+          disabled: false,
+          href: "/"
+        },
+        {
+          text: "Projects",
+          disabled: false,
+          href: "/projects"
+        },
+        {
+          text: "Overview",
+          disabled: true,
+          href: "/"
+        }
+      ],
 
       personnelHeader: [
         {
@@ -366,3 +461,11 @@ export default {
   }
 };
 </script>
+
+<style lang="css">
+.edit-banner {
+  max-width: 160px;
+  position: relative;
+  bottom: -154px;
+}
+</style>

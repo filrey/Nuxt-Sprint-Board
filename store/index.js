@@ -143,7 +143,7 @@ const createStore = () => {
             Cookie.set("uid", result.data.localId);
           })
           .catch(e => {
-            this.$store.dispatch("toggleSnackbar", {
+            vuexContext.dispatch("toggleSnackbar", {
               message: "Invalid email or password",
               color: "error"
             });
@@ -211,16 +211,21 @@ const createStore = () => {
             .split(";")
             .find(c => c.trim().startsWith("uid="))
             .split("=")[1];
+          if(photoUrl != null || photoUrl != undefined){
           photoUrl = req.headers.cookie
             .split(";")
             .find(c => c.trim().startsWith("photoUrl="))
             .split("=")[1];
+          }
+
         } else {
           token = localStorage.getItem("token");
           expirationDate = localStorage.getItem("tokenExpiration");
           email = localStorage.getItem("email");
           uid = localStorage.getItem("uid");
+          if(photoUrl != null || photoUrl != undefined){
           photoUrl = localStorage.getItem("photoUrl");
+        }
         }
         if (new Date().getTime() > +expirationDate || !token) {
           vuexContext.dispatch("toggleSnackbar", {
