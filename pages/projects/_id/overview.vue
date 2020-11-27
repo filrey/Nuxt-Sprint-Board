@@ -6,8 +6,7 @@
       v-if="this.bannerShow"
       height="450"
       :src="
-        this.imgUrl ||
-          this.project.bannerUrl ||
+        this.project.bannerUrl ||
           'https://cdn.vuetifyjs.com/images/parallax/material2.jpg'
       "
     >
@@ -200,7 +199,6 @@ import firebase from "firebase";
 import imageUploader from "../../../components/imageUploader.vue";
 
 export default {
-  components: { imageUploader },
   name: "projectOverview",
   computed: {
     project() {
@@ -217,7 +215,8 @@ export default {
     }
   },
   middleware: ["check-auth", "auth"],
-  components: [imageUploader],
+  components: { imageUploader },
+
   methods: {
     onSubmitTicket() {
       let writeData = {
@@ -248,10 +247,6 @@ export default {
     return {
       bannerShow: true,
       bannerEdit: false,
-      imgUrl: null,
-      uploadValue: 0,
-      newImageUrl: null,
-      selectedFile: null,
       dialog: false,
       ticket: {
         title: "",
