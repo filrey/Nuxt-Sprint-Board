@@ -1,6 +1,7 @@
 import Vuex from "vuex";
 import axios from "axios";
 import Cookie from "js-cookie";
+import firebase from "firebase";
 
 const createStore = () => {
   return new Vuex.Store({
@@ -17,17 +18,14 @@ const createStore = () => {
         color: "",
         value: false
       },
-      loadedTickets: [],
-      loadedTest: [],
+      loadedSiteUsers:[],
       loadedProjects: [],
       token: null
     },
+
     mutations: {
-      setTickets(state, tickets) {
-        state.loadedTickets = tickets;
-      },
-      setTest(state, test) {
-        state.loadedTest = test;
+      setloadedSiteUsers(state, siteUsers){
+        state.loadedSiteUsers = siteUsers;
       },
       setProjects(state, projects) {
         state.loadedProjects = projects;
@@ -71,19 +69,21 @@ const createStore = () => {
         state.snackbar.value = false;
       }
     },
+
     actions: {
       toggleSnackbar(vuexContext, message, color) {
         vuexContext.commit("setSnackbar", message, color);
       },
+
       nuxtServerInit(vuexContext, context) {
         return axios
-          .get("https://agile-sprint-board.firebaseio.com/test.json")
+          .get("https://agile-sprint-board.firebaseio.com/users.json")
           .then(res => {
-            const testArray = [];
+            const usersArray = [];
             for (const key in res.data) {
-              testArray.push({ ...res.data[key], id: key });
+              usersArray.push({ ...res.data[key] });
             }
-            vuexContext.commit("setTest", testArray);
+            vuexContext.commit("setloadedSiteUsers", usersArray);
             return axios.get(
               "https://agile-sprint-board.firebaseio.com/projects.json"
             );
@@ -97,14 +97,32 @@ const createStore = () => {
           })
           .catch(e => context.error(e));
       },
+      
       setTickets(vuexContext, tickets) {
         vuexContext.commit("setTickets", tickets);
       },
+
       setUser(vuexContext, user) {
         vuexContext.commit("setUser", user);
       },
+
       authenticateGoogleUser(vuexContext, authData){
         let expDate = new Date().getTime() + +(1*60*60*1000);
+
+        let writeData = {
+          collection: {
+            email: authData.email, 
+            uid: authData.localId,
+            photoUrl: authData.photoUrl
+          },
+          path: 'users/' + authData.localId, 
+          msgSucces: 'User saved in Database', 
+          msgError: "Error new user database"
+        }
+
+        vuexContext.dispatch("newDataWrite", writeData)
+
+
         vuexContext.commit("setUser", authData);
         vuexContext.commit("setPhotoUrl", authData.photoUrl)
         localStorage.setItem("token", authData.idToken);
@@ -119,6 +137,7 @@ const createStore = () => {
         Cookie.set("photoUrl", authData.photoUrl);
 
       },
+
       authenticateUser(vuexContext, authData) {
         return axios
           .post(
@@ -132,6 +151,20 @@ const createStore = () => {
           )
           .then(result => {
             let expDate = new Date().getTime() + +result.data.expiresIn * 1000;
+            let writeData = {
+              collection: {
+                email: result.data.email, 
+                uid: result.data.localId,
+                photoUrl: `https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico`
+              },
+              path: 'users/' + result.data.localId, 
+              msgSucces: 'User saved in Database', 
+              msgError: "Error new user database"
+            }
+            
+
+            vuexContext.dispatch("newDataWrite", writeData)
+
             vuexContext.commit("setUser", result.data);
             localStorage.setItem("token", result.data.idToken);
             localStorage.setItem("tokenExpiration", expDate);
@@ -149,6 +182,7 @@ const createStore = () => {
             });
           });
       },
+
       newTicket(vuexContext, contextData) {
         return axios
           .post(
@@ -164,6 +198,7 @@ const createStore = () => {
             vuexContext.commit("setSnackbar", {message: 'Error submitting ticket', color: 'error'}); 
           });
       },
+
       newProject(vuexContext, projectData) {
         return axios
           .post(
@@ -174,6 +209,7 @@ const createStore = () => {
           .then(result => console.log("Res from newProject: " + result))
           .catch(e => console.log(e));
       },
+
       newImage(vuexContext, imageData){
         let fbStoreRef = firebase.storage().ref();
         let imageRef = fbStoreRef.child('images/starter.png')
@@ -181,6 +217,69 @@ const createStore = () => {
           result => console.log(result)
         ).catch(e => console.log(e))
       },
+
+      // Creates new data entry with a newly generated key
+      newDataPush(vuexContext, writeData){
+        firebase
+        .database()
+        .ref()
+        .child(writeData.path)
+        .push(writeData.collection)
+        .then(response => {
+          vuexContext.dispatch("toggleSnackbar", {
+            message: writeData.successMsg,
+            color: "success"
+          });
+        })
+        .catch(err => {
+          vuexContext.dispatch("toggleSnackbar", {
+            message: writeData.errorMsg,
+            color: "error"
+          });
+        });
+      },
+
+      newDataUpdate(vuexContext, updateData){
+        firebase
+        .database()
+        .ref()
+        .child(updateData.path)
+        .update(updateData.collection)
+        .then(response => {
+          vuexContext.dispatch("toggleSnackbar", {
+            message: updateData.successMsg,
+            color: "success"
+          });
+        })
+        .catch(err => {
+          vuexContext.dispatch("toggleSnackbar", {
+            message: updateData.errorMsg,
+            color: "error"
+          });
+        });
+      },
+
+
+      newDataWrite(vuexContext, writeData){
+        firebase
+        .database()
+        .ref()
+        .child(writeData.path)
+        .set(writeData.collection)
+        .then(response => {
+          vuexContext.dispatch("toggleSnackbar", {
+            message: writeData.successMsg,
+            color: "success"
+          });
+        })
+        .catch(err => {
+          vuexContext.dispatch("toggleSnackbar", {
+            message: writeData.errorMsg,
+            color: "error"
+          });
+        });
+      },
+
       initAuth(vuexContext, req) {
         let token;
         let expirationDate;
@@ -211,21 +310,21 @@ const createStore = () => {
             .split(";")
             .find(c => c.trim().startsWith("uid="))
             .split("=")[1];
-          if(photoUrl != null || photoUrl != undefined){
+
           photoUrl = req.headers.cookie
             .split(";")
             .find(c => c.trim().startsWith("photoUrl="))
             .split("=")[1];
-          }
+
 
         } else {
           token = localStorage.getItem("token");
           expirationDate = localStorage.getItem("tokenExpiration");
           email = localStorage.getItem("email");
           uid = localStorage.getItem("uid");
-          if(photoUrl != null || photoUrl != undefined){
+
           photoUrl = localStorage.getItem("photoUrl");
-        }
+
         }
         if (new Date().getTime() > +expirationDate || !token) {
           vuexContext.dispatch("toggleSnackbar", {
@@ -241,6 +340,7 @@ const createStore = () => {
         vuexContext.commit("setUid", uid);
         vuexContext.commit("setPhotoUrl", photoUrl)
       },
+
       logout(vuexContext) {
         vuexContext.commit("clearToken");
         vuexContext.commit("clearUser");
@@ -260,8 +360,8 @@ const createStore = () => {
       }
     },
     getters: {
-      loadedTickets(state) {
-        return state.loadedTickets;
+      loadedSiteUsers(state) {
+        return state.loadedSiteUsers;
       },
       loadedProjects(state) {
         return state.loadedProjects;

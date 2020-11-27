@@ -100,6 +100,9 @@
 export default {
   name: "Default",
   computed: {
+    loadedSiteUsers() {
+      return this.$store.getters.loadedSiteUsers;
+    },
     loadedUser() {
       return this.$store.getters.loadedUser;
     },

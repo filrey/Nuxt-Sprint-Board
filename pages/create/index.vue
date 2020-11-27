@@ -26,7 +26,7 @@ export default {
   middleware: ["check-auth", "auth"],
   data() {
     return {
-      projectName: "",
+      projectName: ""
     };
   },
   methods: {
@@ -34,7 +34,7 @@ export default {
       this.$store
         .dispatch("newTicket", {
           title: "hello",
-          updatedDate: new Date(),
+          updatedDate: new Date()
         })
         .then(() => {
           this.$router.push("/dashboard");
@@ -42,23 +42,34 @@ export default {
         .catch();
     },
     onAddProject() {
-      this.$store.dispatch("newProject", {
-        name: this.projectName,
-        manager: "The Boss",
-        devs: ["Filiberto", "Jessica", "Steve"],
-        submitters: ["Sub1", "Sub2", "Sub3"],
-      });
-      this.$store.dispatch("toggleSnackbar", {
-        message: "New Project created",
-        color: "success",
-      });
+      let writeData = {
+        collection: {
+          name: this.projectName,
+          manager: "The Boss",
+          devs: ["Filiberto", "Jessica", "Steve"],
+          submitters: ["Sub1", "Sub2", "Sub3"],
+          tickets: [
+            {
+              title: "Create your first ticket!",
+              description: "First Action",
+              priority: "Medium",
+              type: "Bug"
+            }
+          ]
+        },
+        path: "projects/",
+        msgSucces: "New project Created",
+        msgError: "Error new project"
+      };
+
+      this.$store.dispatch("newDataPush", writeData);
     },
     onTestSnackbar() {
       this.$store.dispatch("toggleSnackbar", {
         message: "Testing Snackbar...",
-        color: "",
+        color: ""
       });
-    },
-  },
+    }
+  }
 };
 </script>

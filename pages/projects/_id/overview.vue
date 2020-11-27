@@ -325,10 +325,14 @@ export default {
       );
     },
     onSubmitTicket() {
-      this.$store.dispatch("newTicket", {
-        ticketData: this.ticket,
-        projectId: this.$route.params.id
-      });
+      let writeData = {
+        collection: this.ticket,
+        path: "projects/" + this.$route.params.id + "/tickets",
+        msgSucces: "New ticket Created",
+        msgError: "Error new ticket"
+      };
+
+      this.$store.dispatch("newDataPush", writeData);
 
       this.ticket.title = "";
       this.ticket.description = "";
