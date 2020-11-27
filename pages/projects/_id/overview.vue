@@ -46,6 +46,9 @@
           </v-toolbar>
 
           <v-data-table
+            v-if="
+              this.project.tickets != undefined && this.project.tickets != null
+            "
             :headers="ticketHeader"
             :items="tickets"
             :items-per-page="5"
@@ -61,6 +64,8 @@
               </v-chip>
             </template>
           </v-data-table>
+
+          <v-card-title v-else>There are no tickets!</v-card-title>
         </v-card>
       </v-col>
 
@@ -180,59 +185,22 @@
       </v-dialog>
     </v-row>
 
-    <!-- Banner Edit Dialog -->
-    <v-row justify="center">
-      <v-dialog v-model="bannerEdit" persistent max-width="600px">
-        <v-card>
-          <v-card-title>
-            <v-icon class="mr-2">mdi-image</v-icon>
-            <span class="headline">New Banner Image</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <input type="file" @change="onFileSelected" />
-                </v-col>
-                <v-col cols="12">
-                  <img :src="newImageUrl" height="150" width="100%" />
-                </v-col>
-                <v-col cols="12">
-                  <v-progress-linear
-                    color="teal"
-                    buffer-value="0"
-                    :value="uploadValue"
-                    stream
-                  >
-                  </v-progress-linear>
-                </v-col>
-              </v-row>
-            </v-container>
-            <small>*Recommended size is 1200x480px for banners</small>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="bannerEdit = false">
-              Cancel
-            </v-btn>
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="onImageUpload()"
-              :disabled="selectedFile == null"
-            >
-              Upload
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-row>
+    <!-- Banner image uploader -->
+    <image-uploader
+      :showModal.sync="bannerEdit"
+      :path="'projects/' + this.project.id"
+      :photoKey="'bannerUrl'"
+      :mode="'update'"
+    ></image-uploader>
   </div>
 </template>
 
 <script>
 import firebase from "firebase";
+import imageUploader from "../../../components/imageUploader.vue";
+
 export default {
+  components: { imageUploader },
   name: "projectOverview",
   computed: {
     project() {
@@ -249,81 +217,8 @@ export default {
     }
   },
   middleware: ["check-auth", "auth"],
+  components: [imageUploader],
   methods: {
-    onFileSelected(event) {
-      this.selectedFile = event.target.files[0];
-      let fileName = this.selectedFile.name;
-
-      if (fileName.lastIndexOf(".") <= 0) {
-        return alert("Please select a valid file!");
-      }
-
-      const fileReader = new FileReader();
-      fileReader.addEventListener("load", () => {
-        this.newImageUrl = fileReader.result;
-      });
-
-      fileReader.readAsDataURL(event.target.files[0]);
-    },
-    onImageUpload() {
-      const storageRef = firebase
-        .storage()
-        .ref(`${this.selectedFile.name}`)
-        .put(this.selectedFile);
-      storageRef.on(
-        `state_changed`,
-        snapshot => {
-          this.uploadValue =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        },
-        error => {
-          this.$store.dispatch("toggleSnackbar", {
-            message: error.message,
-            color: "error"
-          });
-          // console.log(error.message);
-        },
-        () => {
-          this.uploadValue = 100;
-          storageRef.snapshot.ref.getDownloadURL().then(url => {
-            this.imgUrl = url;
-            console.log(this.imgUrl);
-
-            let post = {
-              photo: this.imgUrl,
-              projectId: this.project.id
-            };
-
-            firebase
-              .database()
-              .ref("projects/")
-              .child(this.project.id)
-              .child("bannerUrl")
-              .set(post.photo)
-              .then(response => {
-                this.$store.dispatch("toggleSnackbar", {
-                  message: "Banner changed for " + this.project.name,
-                  color: "success"
-                });
-              })
-              .catch(err => {
-                this.$store.dispatch("toggleSnackbar", {
-                  message: err,
-                  color: "error"
-                });
-              });
-
-            this.bannerEdit = false;
-
-            this.newImageUrl = null;
-            this.selectedFile = null;
-
-            this.bannerShow = false;
-            this.bannerShow = true;
-          });
-        }
-      );
-    },
     onSubmitTicket() {
       let writeData = {
         collection: this.ticket,

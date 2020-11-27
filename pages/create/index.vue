@@ -16,17 +16,32 @@
       <v-btn @click.prevent="onAddProject()" color="green">Add Project</v-btn>
     </v-form>
     <h2>Test Snackbar</h2>
-    <v-btn @click.prevent="onTestSnackbar()" color="grey">Test Snackbar</v-btn>
+    <v-btn class="mb-5" @click.prevent="onTestSnackbar()" color="grey"
+      >Test Snackbar</v-btn
+    >
+
+    <image-uploader
+      :showModal.sync="showImageUploader"
+      :path="'testImages/'"
+      :mode="'push'"
+      :photoKey="'imgUrl'"
+    ></image-uploader>
+    <v-btn @click="showImageUploader = !showImageUploader">
+      Toggle image upload</v-btn
+    >
   </div>
 </template>
 <script>
 import axios from "axios";
+import imageUploader from "../../components/imageUploader.vue";
 export default {
   name: "create",
   middleware: ["check-auth", "auth"],
+  components: [imageUploader],
   data() {
     return {
-      projectName: ""
+      projectName: "",
+      showImageUploader: false
     };
   },
   methods: {
@@ -47,15 +62,7 @@ export default {
           name: this.projectName,
           manager: "The Boss",
           devs: ["Filiberto", "Jessica", "Steve"],
-          submitters: ["Sub1", "Sub2", "Sub3"],
-          tickets: [
-            {
-              title: "Create your first ticket!",
-              description: "First Action",
-              priority: "Medium",
-              type: "Bug"
-            }
-          ]
+          submitters: ["Sub1", "Sub2", "Sub3"]
         },
         path: "projects/",
         msgSucces: "New project Created",

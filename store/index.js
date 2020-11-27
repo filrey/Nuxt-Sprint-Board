@@ -120,7 +120,7 @@ const createStore = () => {
           msgError: "Error new user database"
         }
 
-        vuexContext.dispatch("newDataWrite", writeData)
+        vuexContext.dispatch("newDataSet", writeData)
 
 
         vuexContext.commit("setUser", authData);
@@ -163,7 +163,7 @@ const createStore = () => {
             }
             
 
-            vuexContext.dispatch("newDataWrite", writeData)
+            vuexContext.dispatch("newDataSet", writeData)
 
             vuexContext.commit("setUser", result.data);
             localStorage.setItem("token", result.data.idToken);
@@ -227,13 +227,13 @@ const createStore = () => {
         .push(writeData.collection)
         .then(response => {
           vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.successMsg,
+            message: writeData.msgSucces,
             color: "success"
           });
         })
         .catch(err => {
           vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.errorMsg,
+            message: writeData.msgError,
             color: "error"
           });
         });
@@ -247,20 +247,20 @@ const createStore = () => {
         .update(updateData.collection)
         .then(response => {
           vuexContext.dispatch("toggleSnackbar", {
-            message: updateData.successMsg,
+            message: updateData.msgSucces,
             color: "success"
           });
         })
         .catch(err => {
           vuexContext.dispatch("toggleSnackbar", {
-            message: updateData.errorMsg,
+            message: updateData.msgError,
             color: "error"
           });
         });
       },
 
-
-      newDataWrite(vuexContext, writeData){
+      // Creates new data entry with attribute name as the key
+      newDataSet(vuexContext, writeData){
         firebase
         .database()
         .ref()
@@ -268,13 +268,13 @@ const createStore = () => {
         .set(writeData.collection)
         .then(response => {
           vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.successMsg,
+            message: writeData.msgSucces,
             color: "success"
           });
         })
         .catch(err => {
           vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.errorMsg,
+            message: writeData.msgError,
             color: "error"
           });
         });
