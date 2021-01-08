@@ -54,7 +54,7 @@
             class="elevation-1"
           >
             <template v-slot:item.id="{ item }">
-              {{}}
+              {{ item.id }}
             </template>
 
             <template v-slot:item.priority="{ item }">
@@ -71,7 +71,20 @@
       <!-- Personnel -->
       <v-col cols="12" md="6">
         <v-card>
-          <v-card-title>Assigned Personnel</v-card-title>
+          <v-toolbar flat>
+            <v-card-title>Members</v-card-title>
+
+            <v-spacer></v-spacer>
+
+            <v-btn
+              @click="assignPersonnelModal = true"
+              class="ma-2"
+              depressed
+              outlined
+            >
+              <v-icon>mdi-plus</v-icon>Assign Member</v-btn
+            >
+          </v-toolbar>
 
           <v-data-table
             :headers="personnelHeader"
@@ -184,6 +197,9 @@
       </v-dialog>
     </v-row>
 
+    <!-- Assign Personnel Dialog -->
+    <assign-personnel :showModal.sync="assignPersonnelModal"></assign-personnel>
+
     <!-- Banner image uploader -->
     <image-uploader
       :showModal.sync="bannerEdit"
@@ -197,10 +213,14 @@
 <script>
 import firebase from "firebase";
 import imageUploader from "../../../components/imageUploader.vue";
+import AssignPersonnel from "../../../components/assignPersonnel.vue";
 
 export default {
   name: "projectOverview",
   computed: {
+    user() {
+      return this.$store.getters.loadedUser;
+    },
     project() {
       return this.$store.getters.loadedProjects.find(
         project => project.id == this.$route.params.id
@@ -215,10 +235,25 @@ export default {
     }
   },
   middleware: ["check-auth", "auth"],
-  components: { imageUploader },
+  components: { imageUploader, AssignPersonnel },
 
   methods: {
     onSubmitTicket() {
+      let timeStamp = new Date();
+      this.ticket.created =
+        timeStamp.getUTCMonth() +
+        1 +
+        "/" +
+        timeStamp.getUTCDate() +
+        "/" +
+        timeStamp.getUTCFullYear();
+
+      if (this.project.tickets == undefined) {
+        this.ticket.id = 1;
+      }
+
+      this.ticket.issuer = this.user.email;
+
       let writeData = {
         collection: this.ticket,
         path: "projects/" + this.$route.params.id + "/tickets",
@@ -232,6 +267,7 @@ export default {
       this.ticket.description = "";
       this.ticket.priority = "";
       this.ticket.type = "";
+      this.ticket.created = "";
 
       this.dialog = false;
     },
@@ -245,14 +281,18 @@ export default {
   },
   data() {
     return {
+      assignPersonnelModal: false,
       bannerShow: true,
       bannerEdit: false,
       dialog: false,
       ticket: {
+        id: "",
         title: "",
         description: "",
         priority: "",
-        type: ""
+        type: "",
+        created: "",
+        issuer: ""
       },
 
       breadcrumbs: [
@@ -293,6 +333,8 @@ export default {
         },
         { text: "Title", value: "title" },
         { text: "Type", value: "type" },
+        { text: "Created", value: "created" },
+        { text: "Issuer", value: "issuer" },
         { text: "Priority", value: "priority" }
       ],
       desserts: [
