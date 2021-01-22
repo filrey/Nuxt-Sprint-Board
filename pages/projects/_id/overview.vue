@@ -87,24 +87,29 @@
           </v-toolbar>
 
           <v-data-table
+            v-if="
+              this.project.personnel != undefined &&
+                this.project.personnel != null
+            "
             :headers="personnelHeader"
-            :items="desserts"
+            :items="personnel"
             :items-per-page="5"
             class="elevation-1"
           >
             <template v-slot:item.name="{ item }">
               <v-avatar class="mr-2" color="primary" size="36" dark
-                ><span class="white--text">FR</span></v-avatar
-              >
-              {{ item.name }}
+                ><v-img :src="item.photoUrl" max-height="36"
+              /></v-avatar>
+              {{ item.email }}
             </template>
 
             <template v-slot:item.role="{ item }">
               <v-chip color="red" label dark>
-                {{ item.role }}
+                {{ item.uid }}
               </v-chip>
             </template>
           </v-data-table>
+          <v-card-title v-else>No Personnel Assigned!</v-card-title>
         </v-card>
       </v-col>
 
@@ -220,6 +225,13 @@ export default {
   computed: {
     user() {
       return this.$store.getters.loadedUser;
+    },
+    personnel() {
+      let result = this.$store.getters.loadedProjects.find(
+        project => project.id == this.$route.params.id
+      );
+
+      return Object.values(result.personnel);
     },
     project() {
       return this.$store.getters.loadedProjects.find(

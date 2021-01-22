@@ -60,7 +60,7 @@
 <script>
 import firebase from "firebase";
 export default {
-  name: "newPersonnelModal",
+  name: "personnelModal",
   props: ["showModal"],
   data() {
     return {
@@ -74,7 +74,21 @@ export default {
   },
   methods: {
     onAssignPersonnel() {
-      console.log("AssignPersonnel");
+      let addedPersonnel = {};
+      for (let i = 0; i < this.loadedUsers.length; i++) {
+        addedPersonnel[this.loadedUsers[i].uid] = this.loadedUsers[i];
+      }
+
+      let writeData = {
+        collection: addedPersonnel,
+        path: "projects/" + this.$route.params.id + "/personnel",
+        msgSucces: "Personnel assigned",
+        msgError: "Error while assigning personnel"
+      };
+
+      this.$store.dispatch("newDataUpdate", writeData);
+
+      this.closeModal;
     },
     closeModal() {
       this.$emit("update:showModal", false);
