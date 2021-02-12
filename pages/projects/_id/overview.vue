@@ -54,13 +54,31 @@
             class="elevation-1"
           >
             <template v-slot:item.id="{ item }">
-              {{ item.id }}
+              {{ item[0] }}
+            </template>
+
+            <template v-slot:item.title="{ item }">
+              {{ item[1].title }}
+            </template>
+
+            <template v-slot:item.type="{ item }">
+              {{ item[1].type }}
+            </template>
+
+            <template v-slot:item.created="{ item }">
+              {{ item[1].created }}
+            </template>
+
+            <template v-slot:item.issuer="{ item }">
+              {{ item[1].issuer }}
             </template>
 
             <template v-slot:item.priority="{ item }">
               <v-chip :color="returnPriorityColor(item.priority)" label dark>
-                {{ item.priority }}
+                {{ item[1].priority }}
               </v-chip>
+
+              <!-- <v-btn @click="onDetails(item.id)">Details</v-btn> -->
             </template>
           </v-data-table>
 
@@ -243,7 +261,9 @@ export default {
         project => project.id == this.$route.params.id
       );
 
-      return Object.values(project.tickets);
+      let tickets = Object.entries(project.tickets);
+
+      return tickets;
     }
   },
   middleware: ["check-auth", "auth"],
