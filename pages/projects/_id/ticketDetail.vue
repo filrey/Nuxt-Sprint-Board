@@ -1,9 +1,10 @@
 <template>
-  <div>Ticket Detail Vue ID: {{ $route.params.ticketDetail }}</div>
+  <div>Ticket Detail Vue ID: {{ $route.params.id }}</div>
 </template>
 
 <script>
 export default {
+  name: "ticketDetail",
   data() {
     return {};
   }

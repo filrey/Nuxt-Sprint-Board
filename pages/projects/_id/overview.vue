@@ -62,7 +62,7 @@
             </template>
 
             <template v-slot:item.type="{ item }">
-              {{ item[1].type }}
+              {{ item[1].type.toString() }}
             </template>
 
             <template v-slot:item.created="{ item }">
@@ -74,11 +74,16 @@
             </template>
 
             <template v-slot:item.priority="{ item }">
-              <v-chip :color="returnPriorityColor(item.priority)" label dark>
+              <v-chip :color="returnPriorityColor(item[1].priority)" label dark>
                 {{ item[1].priority }}
               </v-chip>
+              <!-- <v-btn @click="onDetails(item[0])">Details</v-btn> -->
+            </template>
 
-              <!-- <v-btn @click="onDetails(item.id)">Details</v-btn> -->
+            <template v-slot:item.actions="{ item }">
+              <v-icon small class="mr-2" @click="onDetails(item[0])">
+                mdi-pencil
+              </v-icon>
             </template>
           </v-data-table>
 
@@ -270,6 +275,12 @@ export default {
   components: { imageUploader, AssignPersonnel },
 
   methods: {
+    onDetails(ticketID) {
+      this.$router.push({
+        path: "/projects/" + ticketID + "/ticketDetail",
+        params: { projectID: "lo" }
+      });
+    },
     onSubmitTicket() {
       let timeStamp = new Date();
       this.ticket.created =
@@ -304,11 +315,11 @@ export default {
       this.dialog = false;
     },
     returnPriorityColor(priority) {
-      if (priority == "Lowest") return "grey";
-      else if (priority == "Low") return "brown";
-      else if (priority == "Medium") return "blue";
-      else if (priority == "High") return "orange";
-      else return "red";
+      if (priority === "Lowest") return "grey";
+      else if (priority === "Low") return "brown";
+      else if (priority === "Medium") return "blue";
+      else if (priority === "High") return "red";
+      else return "white";
     }
   },
   data() {
@@ -367,63 +378,8 @@ export default {
         { text: "Type", value: "type" },
         { text: "Created", value: "created" },
         { text: "Issuer", value: "issuer" },
-        { text: "Priority", value: "priority" }
-      ],
-      desserts: [
-        {
-          name: "Filiberto Reyes",
-          email: "filibertoreyes55@gmail.com",
-          role: "Manager",
-          lastOnline: "1 minute ago"
-        },
-        {
-          name: "Filiberto Reyes",
-          email: "filibertoreyes55@gmail.com",
-          role: "Manager",
-          lastOnline: "1 minute ago"
-        },
-        {
-          name: "Filiberto Reyes",
-          email: "filibertoreyes55@gmail.com",
-          role: "Manager",
-          lastOnline: "1 minute ago"
-        },
-        {
-          name: "Filiberto Reyes",
-          email: "filibertoreyes55@gmail.com",
-          role: "Manager",
-          lastOnline: "1 minute ago"
-        },
-        {
-          name: "Filiberto Reyes",
-          email: "filibertoreyes55@gmail.com",
-          role: "Manager",
-          lastOnline: "1 minute ago"
-        },
-        {
-          name: "Filiberto Reyes",
-          email: "filibertoreyes55@gmail.com",
-          role: "Manager",
-          lastOnline: "1 minute ago"
-        },
-        {
-          name: "Filiberto Reyes",
-          email: "filibertoreyes55@gmail.com",
-          role: "Manager",
-          lastOnline: "1 minute ago"
-        },
-        {
-          name: "Filiberto Reyes",
-          email: "filibertoreyes55@gmail.com",
-          role: "Manager",
-          lastOnline: "1 minute ago"
-        },
-        {
-          name: "Filiberto Reyes",
-          email: "filibertoreyes55@gmail.com",
-          role: "Manager",
-          lastOnline: "1 minute ago"
-        }
+        { text: "Priority", value: "priority" },
+        { text: "Actions", value: "actions", sortable: false }
       ]
     };
   }
