@@ -179,6 +179,11 @@ export default {
           icon: "mdi-plus",
           title: "Create",
           to: "/create"
+        },
+        {
+          icon: "mdi-account",
+          title: "Manage Users",
+          to: "/users"
         }
       ],
       miniVariant: false,

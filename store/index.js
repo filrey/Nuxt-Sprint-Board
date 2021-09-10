@@ -108,19 +108,21 @@ const createStore = () => {
 
       authenticateGoogleUser(vuexContext, authData){
         let expDate = new Date().getTime() + +(1*60*60*1000);
-
-        let writeData = {
-          collection: {
-            email: authData.email, 
-            uid: authData.localId,
-            photoUrl: authData.photoUrl
-          },
-          path: 'users/' + authData.localId, 
-          msgSucces: 'User saved in Database', 
-          msgError: "Error new user database"
+        // If new google user then save into firebase database under /users
+        if(!authData.doesUserExist){
+          let writeData = {
+            collection: {
+              email: authData.email, 
+              uid: authData.localId,
+              photoUrl: authData.photoUrl
+            },
+            path: 'users/' + authData.localId, 
+            msgSucces: 'User saved in Database', 
+            msgError: "Error new user database"
+          }
+  
+          vuexContext.dispatch("newDataSet", writeData)
         }
-
-        vuexContext.dispatch("newDataSet", writeData)
 
 
         vuexContext.commit("setUser", authData);

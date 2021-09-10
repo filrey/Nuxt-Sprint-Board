@@ -92,10 +92,14 @@ export default {
             idToken: result.credential.idToken,
             localId: result.user.uid,
             displayName: result.user.displayName,
-            photoUrl: result.user.photoURL
+            photoUrl: result.user.photoURL,
+            doesUserExist: !result.additionalUserInfo.isNewUser
           };
           this.$store.dispatch("authenticateGoogleUser", userData);
-          console.log(result);
+          this.$store.dispatch("toggleSnackbar", {
+            message: "Welcome back " + userData.email,
+            color: "success"
+          });
           this.$router.push("/");
         })
         .catch(e => {
