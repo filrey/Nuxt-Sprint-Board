@@ -96,6 +96,7 @@ export default {
             doesUserExist: !result.additionalUserInfo.isNewUser
           };
           this.$store.dispatch("authenticateGoogleUser", userData);
+          this.$store.dispatch("userInit", userData);
           this.$store.dispatch("toggleSnackbar", {
             message: "Welcome back " + userData.email,
             color: "success"
@@ -103,6 +104,7 @@ export default {
           this.$router.push("/");
         })
         .catch(e => {
+          console.log(e);
           this.$store.dispatch("toggleSnackbar", {
             message: "Google Auth Error",
             color: "error"

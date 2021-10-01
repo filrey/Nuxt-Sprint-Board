@@ -11,7 +11,8 @@ const createStore = () => {
         uid: null,
         email: null,
         displayName: "FilRey",
-        photoUrl: ''
+        photoUrl: '',
+        role: ''
       },
       snackbar: {
         message: "No Message",
@@ -44,6 +45,9 @@ const createStore = () => {
       setPhotoUrl(state, photoUrl){
         state.user.photoUrl = photoUrl
       },
+      setRole(state, role){
+        state.user.role = role
+      },
       setToken(state, token) {
         state.token = token;
       },
@@ -63,6 +67,7 @@ const createStore = () => {
         state.user.uid = null;
         state.user.name = null;
         state.user.photoUrl = null;
+        state.user.role = null;
       },
       clearSnackbar(state) {
         state.snackbar.color = "";
@@ -73,6 +78,26 @@ const createStore = () => {
     actions: {
       toggleSnackbar(vuexContext, message, color) {
         vuexContext.commit("setSnackbar", message, color);
+      },
+
+      userInit(vuexContext,userData){
+        return axios
+          .get("https://agile-sprint-board.firebaseio.com/users/" + userData.localId + ".json")
+          .then(res => {
+            //Initializes user data in vuex store, localstorage, and sets  cookies
+            vuexContext.commit("setUser", res.data);
+            vuexContext.commit("setPhotoUrl", res.data.photoUrl)
+            vuexContext.commit("setRole", res.data.role)
+            localStorage.setItem("email", res.data.email);
+            localStorage.setItem("uid", res.data.uid);
+            localStorage.setItem("photoUrl", res.data.photoUrl);
+            localStorage.setItem("role", res.data.role);
+            Cookie.set("email", res.data.email);
+            Cookie.set("uid", res.data.uid);
+            Cookie.set("photoUrl", res.data.photoUrl);
+            Cookie.set("role", res.data.role);
+          })
+          .catch(e => context.error(e));
       },
 
       nuxtServerInit(vuexContext, context) {
@@ -124,20 +149,10 @@ const createStore = () => {
           vuexContext.dispatch("newDataSet", writeData)
         }
 
-
-        vuexContext.commit("setUser", authData);
-        vuexContext.commit("setPhotoUrl", authData.photoUrl)
         localStorage.setItem("token", authData.idToken);
         localStorage.setItem("tokenExpiration", expDate);
-        localStorage.setItem("email", authData.email);
-        localStorage.setItem("uid", authData.localId);
-        localStorage.setItem("photoUrl", authData.photoUrl);
         Cookie.set("jwt", authData.idToken);
         Cookie.set("expirationDate", expDate);
-        Cookie.set("email", authData.email);
-        Cookie.set("uid", authData.localId);
-        Cookie.set("photoUrl", authData.photoUrl);
-
       },
 
       authenticateUser(vuexContext, authData) {
@@ -288,6 +303,8 @@ const createStore = () => {
         let email;
         let uid;
         let photoUrl
+        let role
+
         if (req) {
           if (!req.headers.cookie) {
             return;
@@ -312,10 +329,13 @@ const createStore = () => {
             .split(";")
             .find(c => c.trim().startsWith("uid="))
             .split("=")[1];
-
           photoUrl = req.headers.cookie
             .split(";")
             .find(c => c.trim().startsWith("photoUrl="))
+            .split("=")[1];
+          role = req.headers.cookie
+            .split(";")
+            .find(c => c.trim().startsWith("role="))
             .split("=")[1];
 
 
@@ -324,8 +344,9 @@ const createStore = () => {
           expirationDate = localStorage.getItem("tokenExpiration");
           email = localStorage.getItem("email");
           uid = localStorage.getItem("uid");
-
           photoUrl = localStorage.getItem("photoUrl");
+          role = localStorage.getItem("role");
+
 
         }
         if (new Date().getTime() > +expirationDate || !token) {
@@ -341,6 +362,8 @@ const createStore = () => {
         vuexContext.commit("setEmail", email);
         vuexContext.commit("setUid", uid);
         vuexContext.commit("setPhotoUrl", photoUrl)
+        vuexContext.commit("setRole", role)
+
       },
 
       logout(vuexContext) {
@@ -351,6 +374,8 @@ const createStore = () => {
         Cookie.remove("email");
         Cookie.remove("uid");
         Cookie.remove("photoUrl");
+        Cookie.remove("role");
+
 
         if (process.client) {
           localStorage.removeItem("token");
@@ -358,9 +383,12 @@ const createStore = () => {
           localStorage.removeItem("email");
           localStorage.removeItem("uid");
           localStorage.removeItem("photoUrl");
+          localStorage.removeItem("role");
+
         }
       }
     },
+    
     getters: {
       loadedSiteUsers(state) {
         return state.loadedSiteUsers;

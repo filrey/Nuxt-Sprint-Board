@@ -127,8 +127,8 @@
             </template>
 
             <template v-slot:item.role="{ item }">
-              <v-chip color="red" label dark>
-                {{ item.uid }}
+              <v-chip color="default" label dark>
+                {{ item.role }}
               </v-chip>
             </template>
           </v-data-table>

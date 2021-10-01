@@ -78,11 +78,18 @@ export default {
           }
         )
         .then(result => {
-          this.$store.dispatch("toggleSnackbar", {
-            message: "You are now registered",
-            color: "success"
-          });
-          console.log(result);
+          let writeData = {
+            collection: {
+              email: result.data.email,
+              uid: result.data.localId,
+              photoUrl: `https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico`
+            },
+            path: "users/" + result.data.localId,
+            msgSucces: "You are now registered",
+            msgError: "Error registering"
+          };
+
+          this.$store.dispatch("newDataSet", writeData);
         })
         .catch(e => console.log(e));
     }

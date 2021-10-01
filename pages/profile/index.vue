@@ -1,5 +1,7 @@
 <template>
   <v-container id="user-profile" fluid tag="section">
+    <v-breadcrumbs :items="breadcrumbs" divider="-"></v-breadcrumbs>
+
     <v-row justify="center">
       <v-col cols="12" md="12">
         <v-card class="py-3 px-5">
@@ -23,7 +25,7 @@
                 label="Display Name"
                 v-model="user.displayName"
               ></v-text-field>
-              <v-btn color="primary">Save</v-btn>
+              <v-btn @click="userTest()" color="primary">Find User</v-btn>
             </v-col>
           </v-row>
         </v-card>
@@ -33,6 +35,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Profile",
   middleware: ["check-auth", "auth"],
@@ -42,7 +45,20 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      breadcrumbs: [
+        {
+          text: "Home",
+          disabled: false,
+          href: "/"
+        },
+        {
+          text: "Profile",
+          disabled: true,
+          href: "/profile"
+        }
+      ]
+    };
   }
 };
 </script>
