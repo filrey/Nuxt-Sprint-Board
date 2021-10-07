@@ -82,16 +82,6 @@ export default {
   computed: {
     allUsers() {
       return this.$store.getters.loadedSiteUsers;
-    },
-    allUserEmail() {
-      let users = this.$store.getters.loadedSiteUsers;
-      let res = [];
-
-      users.forEach(user => {
-        res.push(user.email);
-      });
-
-      return res;
     }
   },
   methods: {

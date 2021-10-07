@@ -95,7 +95,7 @@
       <v-col cols="12" md="6">
         <v-card>
           <v-toolbar flat>
-            <v-card-title>Members</v-card-title>
+            <v-card-title>Personnel</v-card-title>
 
             <v-spacer></v-spacer>
 
@@ -120,14 +120,14 @@
             class="elevation-1"
           >
             <template v-slot:item.name="{ item }">
-              <v-avatar class="mr-2" color="primary" size="36" dark
+              <v-avatar class="mr-2" color="grey" size="36" dark
                 ><v-img :src="item.photoUrl" max-height="36"
               /></v-avatar>
               {{ item.email }}
             </template>
 
             <template v-slot:item.role="{ item }">
-              <v-chip color="default" label dark>
+              <v-chip :color="returnRoleColor(item.role)" label dark>
                 {{ item.role }}
               </v-chip>
             </template>
@@ -320,6 +320,13 @@ export default {
       else if (priority === "Medium") return "blue";
       else if (priority === "High") return "red";
       else return "white";
+    },
+    returnRoleColor(role) {
+      if (role === "Submitter") return "grey";
+      else if (role === "Project Manager") return "green";
+      else if (role === "Developer") return "blue";
+      else if (role === "Admin") return "red";
+      else return "default";
     }
   },
   data() {
