@@ -7,10 +7,10 @@ const createStore = () => {
   return new Vuex.Store({
     state: {
       user: {
-        name: "Filiberto Reyes",
+        name: "",
         uid: null,
         email: null,
-        displayName: "FilRey",
+        displayName: "",
         photoUrl: '',
         role: ''
       },
@@ -32,9 +32,7 @@ const createStore = () => {
         state.loadedProjects = projects;
       },
       setUser(state, userData) {
-        state.user.email = userData.email;
-        state.user.token = userData.idToken;
-        state.user.uid = userData.localId;
+        state.user = userData
       },
       setEmail(state, email) {
         state.user.email = email;
