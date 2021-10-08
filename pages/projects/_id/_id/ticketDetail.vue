@@ -18,8 +18,8 @@
             <v-spacer></v-spacer>
 
             <v-btn
-              v-if="!editDescription"
-              @click="editDescription = true"
+              v-if="!editTicket"
+              @click="editTicket = true"
               type="file"
               class="ma-2"
               depressed
@@ -33,45 +33,61 @@
               <v-text-field
                 label="Title"
                 v-model="info.ticket.title"
-                :readonly="!editDescription"
+                :readonly="!editTicket"
                 filled
                 shaped
               >
               </v-text-field>
             </v-col>
             <v-col cols="6">
-              <v-text-field
+              <v-select
+                v-model="info.ticket.assigned"
+                :disabled="!editTicket"
+                :items="Object.values(info.project.personnel)"
+                item-text="email"
+                item-value="uid"
+                prepend-icon="mdi-account"
                 label="Assigned Developer"
-                v-model="info.ticket.priority"
-                :readonly="!editDescription"
-                filled
-                shaped
+                chips
+                return-object
+                hint="Select personell to assign to this ticket."
               >
-              </v-text-field>
+                <template v-slot:selection="{ item }">
+                  <v-chip outlined label>
+                    <v-list-item-avatar class="mr-2">
+                      <v-img :src="item.photoUrl"></v-img>
+                    </v-list-item-avatar>
+                    {{ item.email }}
+                  </v-chip>
+                </template></v-select
+              >
             </v-col>
           </v-row>
-          <v-divider></v-divider>
 
           <v-row>
             <v-col cols="6">
-              <v-text-field
+              <v-select
                 label="Type"
                 v-model="info.ticket.type"
-                :readonly="!editDescription"
+                :items="['Bug', 'Feature', 'Task', 'Subtask', 'Epic']"
+                :readonly="!editTicket"
+                multiple
                 filled
                 shaped
               >
-              </v-text-field>
+              </v-select>
             </v-col>
             <v-col cols="6">
-              <v-text-field
+              <v-select
                 label="Priority"
                 v-model="info.ticket.priority"
-                :readonly="!editDescription"
+                :items="['Lowest', 'Low', 'Medium', 'High', 'Top Priority']"
+                :readonly="!editTicket"
+                required
                 filled
                 shaped
               >
-              </v-text-field>
+              </v-select>
             </v-col>
           </v-row>
 
@@ -101,15 +117,21 @@
           <v-row>
             <v-textarea
               label="Description"
-              v-model="info.project.name"
-              :readonly="!editDescription"
+              v-model="info.ticket.description"
+              :readonly="!editTicket"
               class="ma-2"
               filled
             >
             </v-textarea>
           </v-row>
           <v-divider></v-divider>
-          <v-btn v-if="editDescription" @click="editDescription = false">
+          <v-btn
+            v-if="editTicket"
+            @click="onSubmitTicket()"
+            class="mt-3"
+            color="default"
+            block
+          >
             Save
           </v-btn>
         </v-card>
@@ -165,8 +187,38 @@ export default {
       return { project, ticket, breadcrumbs };
     }
   },
+  methods: {
+    onSubmitTicket() {
+      let idData = this.$route.path.split("/");
+      let now = new Date();
+      let timestamp =
+        now.getMonth() +
+        1 +
+        "/" +
+        now.getDate() +
+        "/" +
+        now.getFullYear() +
+        " " +
+        now.getHours() +
+        ":" +
+        now.getMinutes();
+
+      this.info.ticket["updated"] = timestamp;
+
+      let writeData = {
+        collection: this.info.ticket,
+        path: "projects/" + idData[2] + "/tickets/" + idData[3],
+        msgSucces: "Ticket" + idData[3] + "updated",
+        msgError: "Error while updating ticket"
+      };
+
+      this.$store.dispatch("newDataSet", writeData);
+
+      this.editTicket = false;
+    }
+  },
   data() {
-    return { editDescription: false };
+    return { editTicket: false };
   }
 };
 </script>

@@ -289,16 +289,16 @@ export default {
     onSubmitTicket() {
       let timeStamp = new Date();
       this.ticket.created =
-        timeStamp.getUTCMonth() +
+        timeStamp.getMonth() +
         1 +
         "/" +
-        timeStamp.getUTCDate() +
+        timeStamp.getDate() +
         "/" +
-        timeStamp.getUTCFullYear();
-
-      if (this.project.tickets == undefined) {
-        this.ticket.id = 1;
-      }
+        timeStamp.getFullYear() +
+        " " +
+        timeStamp.getHours() +
+        ":" +
+        timeStamp.getMinutes();
 
       this.ticket.issuer = this.user.email;
 
@@ -341,7 +341,6 @@ export default {
       bannerEdit: false,
       dialog: false,
       ticket: {
-        id: "",
         title: "",
         description: "",
         priority: "",
