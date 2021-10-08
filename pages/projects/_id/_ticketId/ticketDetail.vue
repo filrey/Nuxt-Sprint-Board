@@ -141,70 +141,80 @@
         <v-card class="py-3 px-5">
           <v-toolbar flat>
             <v-toolbar-title>Comments</v-toolbar-title>
-
-            <v-spacer></v-spacer>
-
-            <v-btn
-              @click="addComment()"
-              type="file"
-              class="ma-2"
-              depressed
-              outlined
-            >
-              <v-icon>mdi-plus</v-icon>Add Comment
-            </v-btn>
           </v-toolbar>
           <!-- Comment List -->
           <v-row>
             <v-col cols="12">
               <v-list v-if="this.info.ticket.comments != undefined" three-line>
-                <template v-for="(item, index) in this.info.ticket.comments">
-                  <v-subheader
-                    v-if="item.header"
-                    :key="item.header"
-                    v-text="item.header"
-                  ></v-subheader>
+                <v-divider></v-divider>
+                <v-list-item
+                  v-for="comment in this.info.ticket.comments"
+                  :key="comment.msg"
+                >
+                  <v-list-item-avatar>
+                    <v-img
+                      :src="
+                        comment.user.photoUrl ||
+                          'https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico'
+                      "
+                    ></v-img>
+                  </v-list-item-avatar>
 
-                  <v-divider
-                    v-else-if="item.divider"
-                    :key="index"
-                    :inset="item.inset"
-                  ></v-divider>
+                  <v-list-item-content>
+                    <v-list-item-title
+                      >{{ comment.user.name || comment.user.email }}
+                      <sub class="float-right mt-2">{{ comment.time }}</sub>
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ comment.msg }}</v-list-item-subtitle
+                    >
 
-                  <v-list-item v-else :key="item.title">
-                    <v-list-item-avatar>
-                      <v-img :src="item.avatar"></v-img>
-                    </v-list-item-avatar>
-
-                    <v-list-item-content>
-                      <v-list-item-title
-                        v-html="item.title"
-                      ></v-list-item-title>
-                      <v-list-item-subtitle
-                        v-html="item.subtitle"
-                      ></v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </template>
+                    <v-divider></v-divider>
+                  </v-list-item-content>
+                </v-list-item>
               </v-list>
-              <span v-else>There are no comments. Start the conversation!</span>
+              <v-list v-else>
+                <v-list-item>
+                  <v-list-item-avatar>
+                    <v-img
+                      src="https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico"
+                    ></v-img>
+                  </v-list-item-avatar>
+
+                  <v-list-item-content>
+                    <v-list-item-title>Admin</v-list-item-title>
+                    <v-list-item-subtitle>
+                      No comments, start the conversation!</v-list-item-subtitle
+                    >
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
             </v-col>
           </v-row>
 
           <v-row>
-            <v-col cols="3">
-              <!-- <v-avatar class="mr-2" color="grey" size="36" dark
-                ><v-img :src="item.photoUrl" max-height="36" />
-              </v-avatar> -->
-            </v-col>
-            <v-col cols="12"
-              ><v-textarea
-                label="Add Comment"
+            <v-col cols="12">
+              <v-text-field
                 v-model="newComment"
-                rows="2"
-                shaped
-              ></v-textarea
-            ></v-col>
+                :label="user.name || user.email"
+                outlined
+                clearable
+                dense
+                clear-icon="mdi-close"
+              >
+                <template v-slot:prepend>
+                  <v-avatar class="my-n2" color="grey" size="36" dark>
+                    <v-img :src="user.photoUrl" max-height="36" />
+                  </v-avatar>
+                </template>
+
+                <template v-slot:append-outer>
+                  <v-btn class="my-n2" @click="addComment()">
+                    <v-icon left> mdi-send </v-icon>Send</v-btn
+                  >
+                </template>
+              </v-text-field>
+            </v-col>
           </v-row>
         </v-card>
       </v-col>
@@ -212,9 +222,52 @@
 
     <v-row>
       <!-- Ticket History -->
-      <v-col cols="12" md="6"> </v-col>
+      <v-col cols="12" lg="6">
+        <v-card class="py-3 px-5">
+          <v-toolbar flat><v-toolbar-title>Log</v-toolbar-title> </v-toolbar>
+          <v-row>
+            <v-col cols="12">
+              <v-divider></v-divider>
+              <v-timeline dense clipped>
+                <v-timeline-item
+                  v-for="log in this.info.ticket.logs"
+                  :key="log.data"
+                >
+                  <template v-slot:icon>
+                    <v-avatar>
+                      <img :src="log.user.photoUrl" />
+                    </v-avatar>
+                  </template>
+                  <v-expansion-panels popout>
+                    <v-expansion-panel>
+                      <v-expansion-panel-header
+                        ><div v-if="log.type == 'comment'">
+                          {{ log.user.name }} commented {{ log.time }}
+                        </div>
+                        <div v-if="log.type == 'detail'">
+                          {{ log.user.name }} updated ticket details
+                          {{ log.time }}
+                        </div>
+                      </v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <div v-if="log.type == 'comment'">
+                          Comment: "{{ log.data }}"
+                        </div>
+
+                        <div v-if="log.type == 'detail'">
+                          New Details: "{{ log.data }}"
+                        </div>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                </v-timeline-item>
+              </v-timeline>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
       <!-- Attachments -->
-      <v-col cols="12" md="6"> </v-col>
+      <v-col cols="12" lg="6"> </v-col>
     </v-row>
   </div>
 </template>
@@ -226,10 +279,13 @@ export default {
   computed: {
     info() {
       let idData = this.$route.path.split("/");
+      idData.shift();
+      idData.shift();
+      idData.pop();
       let project = this.$store.getters.loadedProjects.find(
-        project => project.id == idData[2]
+        project => project.id == idData[0]
       );
-      let ticket = project.tickets[idData[3]];
+      let ticket = project.tickets[idData[1]];
 
       let breadcrumbs = [
         {
@@ -248,23 +304,29 @@ export default {
           href: "/projects/" + project.id + "/overview"
         },
         {
-          text: "Ticket" + idData[3],
+          text: "Ticket" + idData[1],
           disabled: true,
           href: "/projects/"
         }
       ];
 
-      return { project, ticket, breadcrumbs };
+      return { project, ticket, breadcrumbs, idData };
     },
     user() {
       return this.$store.getters.loadedUser;
     }
   },
   methods: {
-    addComment() {},
-    onSubmitTicket() {
-      let idData = this.$route.path.split("/");
+    addComment() {
       let now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let ampm = hours >= 12 ? "pm" : "am";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      let strTime = hours + ":" + minutes + " " + ampm;
+
       let timestamp =
         now.getMonth() +
         1 +
@@ -273,9 +335,60 @@ export default {
         "/" +
         now.getFullYear() +
         " " +
-        now.getHours() +
-        ":" +
-        now.getMinutes();
+        strTime;
+
+      let writeData = {
+        collection: { msg: this.newComment, time: timestamp, user: this.user },
+        path:
+          "projects/" +
+          this.info.idData[0] +
+          "/tickets/" +
+          this.info.idData[1] +
+          "/comments",
+        msgSucces: "Comment added",
+        msgError: "Error while adding comment"
+      };
+
+      let logData = {
+        collection: {
+          data: this.newComment,
+          time: timestamp,
+          user: this.user,
+          type: "comment"
+        },
+        path:
+          "projects/" +
+          this.info.idData[0] +
+          "/tickets/" +
+          this.info.idData[1] +
+          "/logs",
+        msgSucces: "Comment added",
+        msgError: "Error while adding comment"
+      };
+
+      this.$store.dispatch("newDataPush", writeData);
+      this.$store.dispatch("newDataPush", logData);
+    },
+    onSubmitTicket() {
+      let idData = this.$route.path.split("/");
+      let now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let ampm = hours >= 12 ? "pm" : "am";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      let strTime = hours + ":" + minutes + " " + ampm;
+
+      let timestamp =
+        now.getMonth() +
+        1 +
+        "/" +
+        now.getDate() +
+        "/" +
+        now.getFullYear() +
+        " " +
+        strTime;
 
       this.info.ticket["updated"] = timestamp;
 
@@ -287,6 +400,25 @@ export default {
       };
 
       this.$store.dispatch("newDataSet", writeData);
+
+      let logData = {
+        collection: {
+          user: this.user,
+          type: "detail",
+          time: timestamp,
+          data: {
+            title: this.info.ticket.title,
+            priority: this.info.ticket.priority,
+            ticketType: this.info.ticket.type,
+            description: this.info.ticket.description
+          }
+        },
+        path: "projects/" + idData[2] + "/tickets/" + idData[3] + "/logs",
+        msgSucces: "Ticket" + idData[3] + " updated",
+        msgError: "Error while updating ticket"
+      };
+
+      this.$store.dispatch("newDataPush", logData);
 
       this.editTicket = false;
     }

@@ -102,7 +102,6 @@ const createStore = () => {
         return axios
           .get("https://agile-sprint-board.firebaseio.com/users/" + userData.localId + ".json")
           .then(res => {
-            console.log(res.data)
             let userObj = {
               bio: res.data.bio,
               name: res.data.name,
@@ -344,7 +343,6 @@ const createStore = () => {
             .find(c => c.trim().startsWith("expirationDate="))
             .split("=")[1];
 
-          console.log(req.headers.cookie)
 
           for (let index = 0; index < lsNames.length; index++) {
             
