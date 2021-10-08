@@ -20,8 +20,8 @@
         small
         dark
       >
-        <v-icon>mdi-plus</v-icon>Edit Banner</v-btn
-      >
+        <v-icon>mdi-plus</v-icon>Edit Banner
+      </v-btn>
     </v-parallax>
 
     <v-row>
@@ -40,8 +40,8 @@
               depressed
               outlined
             >
-              <v-icon>mdi-plus</v-icon>New ticket</v-btn
-            >
+              <v-icon>mdi-plus</v-icon>New ticket
+            </v-btn>
           </v-toolbar>
 
           <v-data-table
@@ -277,8 +277,13 @@ export default {
   methods: {
     onDetails(ticketID) {
       this.$router.push({
-        path: "/projects/" + ticketID + "/ticketDetail",
-        params: { projectID: "lo" }
+        path:
+          "/projects/" +
+          this.$route.params.id +
+          "/" +
+          ticketID +
+          "/ticketDetail",
+        query: { project: this.project }
       });
     },
     onSubmitTicket() {

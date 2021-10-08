@@ -76,22 +76,6 @@
                     label="Description"
                   ></v-textarea>
                 </v-col>
-                <!-- <v-col cols="12" sm="6">
-                  <v-select
-                    v-model="ticket.priority"
-                    :items="['Lowest', 'Low', 'Medium', 'High', 'Top Priority']"
-                    label="Priority*"
-                    required
-                  ></v-select>
-                </v-col> -->
-                <!-- <v-col cols="12" sm="6">
-                  <v-autocomplete
-                    v-model="ticket.type"
-                    :items="['Bug', 'Feature', 'Task', 'Subtask', 'Epic']"
-                    label="Type"
-                    multiple
-                  ></v-autocomplete>
-                </v-col> -->
               </v-row>
             </v-container>
             <small>*Where it all begins</small>
