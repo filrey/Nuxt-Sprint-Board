@@ -7,6 +7,7 @@ const createStore = () => {
   return new Vuex.Store({
     state: {
       user: {
+        bio: "",
         name: "",
         uid: null,
         email: null,
@@ -34,11 +35,20 @@ const createStore = () => {
       setUser(state, userData) {
         state.user = userData
       },
+      setBio(state,bio){
+        state.user.bio = bio;
+      },
+      setName(state,name){
+        state.user.name = name;
+      },
+      setUid(state, uid) {
+        state.user.uid = uid;
+      },      
       setEmail(state, email) {
         state.user.email = email;
       },
-      setUid(state, id) {
-        state.user.uid = id;
+      setDisplayName(state, displayName) {
+        state.user.displayName = displayName;
       },
       setPhotoUrl(state, photoUrl){
         state.user.photoUrl = photoUrl
@@ -61,9 +71,11 @@ const createStore = () => {
         state.token = null;
       },
       clearUser(state) {
-        state.user.email = null;
+        state.user.bio = null
+        state.user.name = null
         state.user.uid = null;
-        state.user.name = null;
+        state.user.email = null;
+        state.user.displayName = null;
         state.user.photoUrl = null;
         state.user.role = null;
       },
@@ -74,6 +86,14 @@ const createStore = () => {
     },
 
     actions: {
+      setTickets(vuexContext, tickets) {
+        vuexContext.commit("setTickets", tickets);
+      },
+
+      setUser(vuexContext, user) {
+        vuexContext.commit("setUser", user);
+      },
+
       toggleSnackbar(vuexContext, message, color) {
         vuexContext.commit("setSnackbar", message, color);
       },
@@ -82,18 +102,27 @@ const createStore = () => {
         return axios
           .get("https://agile-sprint-board.firebaseio.com/users/" + userData.localId + ".json")
           .then(res => {
+            console.log(res.data)
+            let userObj = {
+              bio: res.data.bio,
+              name: res.data.name,
+              uid: res.data.uid,
+              email: res.data.email,
+              displayName: res.data.displayName,
+              photoUrl: res.data.photoUrl,
+              role: res.data.role
+            }
+            let lsNames = ["bio","name","uid","email","displayName","photoUrl","role"]
+            let lsValues = [userObj.bio,userObj.name,userObj.uid,userObj.email,userObj.displayName,userObj.photoUrl,userObj.role]
             //Initializes user data in vuex store, localstorage, and sets  cookies
             vuexContext.commit("setUser", res.data);
-            vuexContext.commit("setPhotoUrl", res.data.photoUrl)
-            vuexContext.commit("setRole", res.data.role)
-            localStorage.setItem("email", res.data.email);
-            localStorage.setItem("uid", res.data.uid);
-            localStorage.setItem("photoUrl", res.data.photoUrl);
-            localStorage.setItem("role", res.data.role);
-            Cookie.set("email", res.data.email);
-            Cookie.set("uid", res.data.uid);
-            Cookie.set("photoUrl", res.data.photoUrl);
-            Cookie.set("role", res.data.role);
+
+            for (let index = 0; index < lsNames.length; index++) {
+              localStorage.setItem(lsNames[index], lsValues[index]);
+              Cookie.set(lsNames[index], lsValues[index]);
+              
+            }
+
           })
           .catch(e => context.error(e));
       },
@@ -121,13 +150,7 @@ const createStore = () => {
           .catch(e => context.error(e));
       },
       
-      setTickets(vuexContext, tickets) {
-        vuexContext.commit("setTickets", tickets);
-      },
 
-      setUser(vuexContext, user) {
-        vuexContext.commit("setUser", user);
-      },
 
       authenticateGoogleUser(vuexContext, authData){
         let expDate = new Date().getTime() + +(1*60*60*1000);
@@ -298,10 +321,11 @@ const createStore = () => {
       initAuth(vuexContext, req) {
         let token;
         let expirationDate;
-        let email;
-        let uid;
-        let photoUrl
-        let role
+
+        // let expirationDate,bio,name,uid,email,displayName,photoUrl,role
+        let lsNames = ["bio","name","uid","email","displayName","photoUrl","role"]
+        let commands = ["setBio","setName","setUid","setEmail","setDisplayName","setPhotoUrl","setRole"]
+        let lsValues = ["","","","","","",""]
 
         if (req) {
           if (!req.headers.cookie) {
@@ -319,31 +343,28 @@ const createStore = () => {
             .split(";")
             .find(c => c.trim().startsWith("expirationDate="))
             .split("=")[1];
-          email = req.headers.cookie
-            .split(";")
-            .find(c => c.trim().startsWith("email="))
-            .split("=")[1];
-          uid = req.headers.cookie
-            .split(";")
-            .find(c => c.trim().startsWith("uid="))
-            .split("=")[1];
-          photoUrl = req.headers.cookie
-            .split(";")
-            .find(c => c.trim().startsWith("photoUrl="))
-            .split("=")[1];
-          role = req.headers.cookie
-            .split(";")
-            .find(c => c.trim().startsWith("role="))
-            .split("=")[1];
+
+          console.log(req.headers.cookie)
+
+          for (let index = 0; index < lsNames.length; index++) {
+            
+            lsValues[index] = req.headers.cookie
+              .split(";")
+              .find(c => c.trim().startsWith(lsNames[index] +"="))
+              .split("=")[1]
+              .replace(/%20/gi, " ");
+              
+          }
 
 
         } else {
           token = localStorage.getItem("token");
           expirationDate = localStorage.getItem("tokenExpiration");
-          email = localStorage.getItem("email");
-          uid = localStorage.getItem("uid");
-          photoUrl = localStorage.getItem("photoUrl");
-          role = localStorage.getItem("role");
+
+          for (let index = 0; index < lsNames.length; index++) {
+            lsValues[index] = localStorage.getItem(lsNames[index]);
+            
+          }
 
 
         }
@@ -357,31 +378,34 @@ const createStore = () => {
         }
 
         vuexContext.commit("setToken", token);
-        vuexContext.commit("setEmail", email);
-        vuexContext.commit("setUid", uid);
-        vuexContext.commit("setPhotoUrl", photoUrl)
-        vuexContext.commit("setRole", role)
+
+        for (let index = 0; index < lsNames.length; index++) {
+          vuexContext.commit(commands[index], lsValues[index]);
+          
+        }
 
       },
 
       logout(vuexContext) {
+        let lsNames = ["bio","name","uid","email","displayName","photoUrl","role"]
+
         vuexContext.commit("clearToken");
         vuexContext.commit("clearUser");
         Cookie.remove("jwt");
         Cookie.remove("expirationDate");
-        Cookie.remove("email");
-        Cookie.remove("uid");
-        Cookie.remove("photoUrl");
-        Cookie.remove("role");
+
+        lsNames.forEach(property => {
+          Cookie.remove(property);
+        });
 
 
         if (process.client) {
           localStorage.removeItem("token");
           localStorage.removeItem("tokenExpiration");
-          localStorage.removeItem("email");
-          localStorage.removeItem("uid");
-          localStorage.removeItem("photoUrl");
-          localStorage.removeItem("role");
+
+          lsNames.forEach(property => {
+            localStorage.removeItem(property);
+          });
 
         }
       }

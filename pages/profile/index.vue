@@ -1,9 +1,9 @@
 <template>
-  <v-container id="user-profile" fluid tag="section">
+  <v-container id="user-profile" fluid>
     <v-breadcrumbs :items="breadcrumbs" divider="-"></v-breadcrumbs>
 
     <v-row justify="center">
-      <v-col cols="12" md="12">
+      <v-col cols="12" md="8">
         <v-card class="py-3 px-5">
           <v-toolbar flat>
             <v-chip class="ma-2" color="error" outlined label>
