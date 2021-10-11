@@ -127,6 +127,15 @@
           <v-divider></v-divider>
           <v-btn
             v-if="editTicket"
+            @click="editTicket = false"
+            class="mt-3"
+            color="error"
+            block
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            v-if="editTicket"
             @click="onSubmitTicket()"
             class="mt-3"
             color="default"
@@ -142,53 +151,49 @@
           <v-toolbar flat>
             <v-toolbar-title>Comments</v-toolbar-title>
           </v-toolbar>
+          <v-divider></v-divider>
           <!-- Comment List -->
           <v-row>
-            <v-col cols="12">
-              <v-list v-if="this.info.ticket.comments != undefined" three-line>
-                <v-divider></v-divider>
-                <v-list-item
+            <v-col class="timeLineScroll" cols="12">
+              <v-timeline
+                v-if="this.info.ticket.comments != undefined"
+                :dense="$vuetify.breakpoint.mdAndDown"
+              >
+                <v-timeline-item
                   v-for="comment in this.info.ticket.comments"
                   :key="comment.msg"
+                  :left="comment.user.uid !== user.uid"
+                  :right="comment.user.uid == user.uid"
                 >
-                  <v-list-item-avatar>
-                    <v-img
-                      :src="
-                        comment.user.photoUrl ||
-                          'https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico'
-                      "
-                    ></v-img>
-                  </v-list-item-avatar>
-
-                  <v-list-item-content>
-                    <v-list-item-title
-                      >{{ comment.user.name || comment.user.email }}
-                      <sub class="float-right mt-2">{{ comment.time }}</sub>
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{ comment.msg }}</v-list-item-subtitle
+                  <template v-slot:icon>
+                    <v-avatar>
+                      <img
+                        :src="
+                          comment.user.photoUrl ||
+                            'https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico'
+                        "
+                      />
+                    </v-avatar>
+                  </template>
+                  <template v-slot:opposite>
+                    <span>{{ comment.user.name || comment.user.email }}</span>
+                  </template>
+                  <v-card class="elevation-2">
+                    <v-card-text>{{ comment.msg }}</v-card-text>
+                    <v-card-text> {{ comment.time }}</v-card-text>
+                  </v-card>
+                </v-timeline-item>
+              </v-timeline>
+              <v-timeline v-else dense>
+                <v-timeline-item>
+                  <v-card>
+                    <v-card-title>Admin</v-card-title>
+                    <v-card-text
+                      >No comments yet, start the conversation!</v-card-text
                     >
-
-                    <v-divider></v-divider>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-              <v-list v-else>
-                <v-list-item>
-                  <v-list-item-avatar>
-                    <v-img
-                      src="https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico"
-                    ></v-img>
-                  </v-list-item-avatar>
-
-                  <v-list-item-content>
-                    <v-list-item-title>Admin</v-list-item-title>
-                    <v-list-item-subtitle>
-                      No comments, start the conversation!</v-list-item-subtitle
-                    >
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
+                  </v-card>
+                </v-timeline-item>
+              </v-timeline>
             </v-col>
           </v-row>
 
@@ -466,3 +471,11 @@ export default {
   }
 };
 </script>
+<style lang="css">
+.timeLineScroll {
+  max-height: 420px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+}
+</style>
