@@ -12,49 +12,49 @@ const createStore = () => {
         uid: null,
         email: null,
         displayName: "",
-        photoUrl: '',
-        role: ''
+        photoUrl: "",
+        role: ""
       },
       snackbar: {
         message: "No Message",
         color: "",
         value: false
       },
-      loadedSiteUsers:[],
+      loadedSiteUsers: [],
       loadedProjects: [],
       token: null
     },
 
     mutations: {
-      setloadedSiteUsers(state, siteUsers){
+      setloadedSiteUsers(state, siteUsers) {
         state.loadedSiteUsers = siteUsers;
       },
       setProjects(state, projects) {
         state.loadedProjects = projects;
       },
       setUser(state, userData) {
-        state.user = userData
+        state.user = userData;
       },
-      setBio(state,bio){
+      setBio(state, bio) {
         state.user.bio = bio;
       },
-      setName(state,name){
+      setName(state, name) {
         state.user.name = name;
       },
       setUid(state, uid) {
         state.user.uid = uid;
-      },      
+      },
       setEmail(state, email) {
         state.user.email = email;
       },
       setDisplayName(state, displayName) {
         state.user.displayName = displayName;
       },
-      setPhotoUrl(state, photoUrl){
-        state.user.photoUrl = photoUrl
+      setPhotoUrl(state, photoUrl) {
+        state.user.photoUrl = photoUrl;
       },
-      setRole(state, role){
-        state.user.role = role
+      setRole(state, role) {
+        state.user.role = role;
       },
       setToken(state, token) {
         state.token = token;
@@ -71,8 +71,8 @@ const createStore = () => {
         state.token = null;
       },
       clearUser(state) {
-        state.user.bio = null
-        state.user.name = null
+        state.user.bio = null;
+        state.user.name = null;
         state.user.uid = null;
         state.user.email = null;
         state.user.displayName = null;
@@ -98,9 +98,13 @@ const createStore = () => {
         vuexContext.commit("setSnackbar", message, color);
       },
 
-      userInit(vuexContext,userData){
+      userInit(vuexContext, userData) {
         return axios
-          .get("https://agile-sprint-board.firebaseio.com/users/" + userData.localId + ".json")
+          .get(
+            "https://agile-sprint-board.firebaseio.com/users/" +
+              userData.localId +
+              ".json"
+          )
           .then(res => {
             let userObj = {
               bio: res.data.bio,
@@ -110,18 +114,32 @@ const createStore = () => {
               displayName: res.data.displayName,
               photoUrl: res.data.photoUrl,
               role: res.data.role
-            }
-            let lsNames = ["bio","name","uid","email","displayName","photoUrl","role"]
-            let lsValues = [userObj.bio,userObj.name,userObj.uid,userObj.email,userObj.displayName,userObj.photoUrl,userObj.role]
+            };
+            let lsNames = [
+              "bio",
+              "name",
+              "uid",
+              "email",
+              "displayName",
+              "photoUrl",
+              "role"
+            ];
+            let lsValues = [
+              userObj.bio,
+              userObj.name,
+              userObj.uid,
+              userObj.email,
+              userObj.displayName,
+              userObj.photoUrl,
+              userObj.role
+            ];
             //Initializes user data in vuex store, localstorage, and sets  cookies
             vuexContext.commit("setUser", res.data);
 
             for (let index = 0; index < lsNames.length; index++) {
               localStorage.setItem(lsNames[index], lsValues[index]);
               Cookie.set(lsNames[index], lsValues[index]);
-              
             }
-
           })
           .catch(e => context.error(e));
       },
@@ -148,25 +166,23 @@ const createStore = () => {
           })
           .catch(e => context.error(e));
       },
-      
 
-
-      authenticateGoogleUser(vuexContext, authData){
-        let expDate = new Date().getTime() + +(1*60*60*1000);
+      authenticateGoogleUser(vuexContext, authData) {
+        let expDate = new Date().getTime() + +(1 * 60 * 60 * 1000);
         // If new google user then save into firebase database under /users
-        if(!authData.doesUserExist){
+        if (!authData.doesUserExist) {
           let writeData = {
             collection: {
-              email: authData.email, 
+              email: authData.email,
               uid: authData.localId,
               photoUrl: authData.photoUrl
             },
-            path: 'users/' + authData.localId, 
-            msgSucces: 'User saved in Database', 
+            path: "users/" + authData.localId,
+            msgSucces: "User saved in Database",
             msgError: "Error new user database"
-          }
-  
-          vuexContext.dispatch("newDataSet", writeData)
+          };
+
+          vuexContext.dispatch("newDataSet", writeData);
         }
 
         localStorage.setItem("token", authData.idToken);
@@ -190,17 +206,16 @@ const createStore = () => {
             let expDate = new Date().getTime() + +result.data.expiresIn * 1000;
             let writeData = {
               collection: {
-                email: result.data.email, 
+                email: result.data.email,
                 uid: result.data.localId,
                 photoUrl: `https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico`
               },
-              path: 'users/' + result.data.localId, 
-              msgSucces: 'User saved in Database', 
+              path: "users/" + result.data.localId,
+              msgSucces: "User saved in Database",
               msgError: "Error new user database"
-            }
-            
+            };
 
-            vuexContext.dispatch("newDataSet", writeData)
+            vuexContext.dispatch("newDataSet", writeData);
 
             vuexContext.commit("setUser", result.data);
             localStorage.setItem("token", result.data.idToken);
@@ -223,16 +238,23 @@ const createStore = () => {
       newTicket(vuexContext, contextData) {
         return axios
           .post(
-            "https://agile-sprint-board.firebaseio.com/projects/"+ contextData.projectId + "/tickets.json?auth=" +
+            "https://agile-sprint-board.firebaseio.com/projects/" +
+              contextData.projectId +
+              "/tickets.json?auth=" +
               vuexContext.state.token,
             contextData.ticketData
           )
           .then(result => {
-            vuexContext.commit("setSnackbar", {message: 'Ticket submitted', color: 'success'}); 
-
+            vuexContext.commit("setSnackbar", {
+              message: "Ticket submitted",
+              color: "success"
+            });
           })
           .catch(e => {
-            vuexContext.commit("setSnackbar", {message: 'Error submitting ticket', color: 'error'}); 
+            vuexContext.commit("setSnackbar", {
+              message: "Error submitting ticket",
+              color: "error"
+            });
           });
       },
 
@@ -247,95 +269,96 @@ const createStore = () => {
           .catch(e => console.log(e));
       },
 
-      newImage(vuexContext, imageData){
+      newImage(vuexContext, imageData) {
         let fbStoreRef = firebase.storage().ref();
-        let imageRef = fbStoreRef.child('images/starter.png')
-        imageRef.put(imageData).then(
-          result => console.log(result)
-        ).catch(e => console.log(e))
+        let imageRef = fbStoreRef.child("images/starter.png");
+        imageRef
+          .put(imageData)
+          .then(result => console.log(result))
+          .catch(e => console.log(e));
       },
 
       // Creates new data entry with a newly generated key
-      newDataPush(vuexContext, writeData){
+      newDataPush(vuexContext, writeData) {
         firebase
-        .database()
-        .ref()
-        .child(writeData.path)
-        .push(writeData.collection)
-        .then(response => {
-          vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.msgSucces,
-            color: "success"
+          .database()
+          .ref()
+          .child(writeData.path)
+          .push(writeData.collection)
+          .then(response => {
+            vuexContext.dispatch("toggleSnackbar", {
+              message: writeData.msgSucces,
+              color: "success"
+            });
+          })
+          .catch(err => {
+            vuexContext.dispatch("toggleSnackbar", {
+              message: writeData.msgError,
+              color: "error"
+            });
           });
-        })
-        .catch(err => {
-          vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.msgError,
-            color: "error"
-          });
-        });
       },
 
-      newDataUpdate(vuexContext, updateData){
+      newDataUpdate(vuexContext, updateData) {
         firebase
-        .database()
-        .ref()
-        .child(updateData.path)
-        .update(updateData.collection)
-        .then(response => {
-          vuexContext.dispatch("toggleSnackbar", {
-            message: updateData.msgSucces,
-            color: "success"
+          .database()
+          .ref()
+          .child(updateData.path)
+          .update(updateData.collection)
+          .then(response => {
+            vuexContext.dispatch("toggleSnackbar", {
+              message: updateData.msgSucces,
+              color: "success"
+            });
+          })
+          .catch(err => {
+            vuexContext.dispatch("toggleSnackbar", {
+              message: updateData.msgError,
+              color: "error"
+            });
           });
-        })
-        .catch(err => {
-          vuexContext.dispatch("toggleSnackbar", {
-            message: updateData.msgError,
-            color: "error"
-          });
-        });
       },
 
       // Creates new data entry with attribute name as the key
-      newDataSet(vuexContext, writeData){
+      newDataSet(vuexContext, writeData) {
         firebase
-        .database()
-        .ref()
-        .child(writeData.path)
-        .set(writeData.collection)
-        .then(response => {
-          vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.msgSucces,
-            color: "success"
+          .database()
+          .ref()
+          .child(writeData.path)
+          .set(writeData.collection)
+          .then(response => {
+            vuexContext.dispatch("toggleSnackbar", {
+              message: writeData.msgSucces,
+              color: "success"
+            });
+          })
+          .catch(err => {
+            vuexContext.dispatch("toggleSnackbar", {
+              message: writeData.msgError,
+              color: "error"
+            });
           });
-        })
-        .catch(err => {
-          vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.msgError,
-            color: "error"
-          });
-        });
       },
 
       // Deletes entry at specified path writeData.path
-      dataRemove(vuexContext, writeData){
+      dataRemove(vuexContext, writeData) {
         firebase
-        .database()
-        .ref()
-        .child(writeData.path)
-        .remove()
-        .then(response => {
-          vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.msgSucces,
-            color: "success"
+          .database()
+          .ref()
+          .child(writeData.path)
+          .remove()
+          .then(response => {
+            vuexContext.dispatch("toggleSnackbar", {
+              message: writeData.msgSucces,
+              color: "success"
+            });
+          })
+          .catch(err => {
+            vuexContext.dispatch("toggleSnackbar", {
+              message: writeData.msgError,
+              color: "error"
+            });
           });
-        })
-        .catch(err => {
-          vuexContext.dispatch("toggleSnackbar", {
-            message: writeData.msgError,
-            color: "error"
-          });
-        });
       },
 
       initAuth(vuexContext, req) {
@@ -343,9 +366,25 @@ const createStore = () => {
         let expirationDate;
 
         // let expirationDate,bio,name,uid,email,displayName,photoUrl,role
-        let lsNames = ["bio","name","uid","email","displayName","photoUrl","role"]
-        let commands = ["setBio","setName","setUid","setEmail","setDisplayName","setPhotoUrl","setRole"]
-        let lsValues = ["","","","","","",""]
+        let lsNames = [
+          "bio",
+          "name",
+          "uid",
+          "email",
+          "displayName",
+          "photoUrl",
+          "role"
+        ];
+        let commands = [
+          "setBio",
+          "setName",
+          "setUid",
+          "setEmail",
+          "setDisplayName",
+          "setPhotoUrl",
+          "setRole"
+        ];
+        let lsValues = ["", "", "", "", "", "", ""];
 
         if (req) {
           if (!req.headers.cookie) {
@@ -364,28 +403,20 @@ const createStore = () => {
             .find(c => c.trim().startsWith("expirationDate="))
             .split("=")[1];
 
-
           for (let index = 0; index < lsNames.length; index++) {
-            
             lsValues[index] = req.headers.cookie
               .split(";")
-              .find(c => c.trim().startsWith(lsNames[index] +"="))
+              .find(c => c.trim().startsWith(lsNames[index] + "="))
               .split("=")[1]
               .replace(/%20/gi, " ");
-              
           }
-
-
         } else {
           token = localStorage.getItem("token");
           expirationDate = localStorage.getItem("tokenExpiration");
 
           for (let index = 0; index < lsNames.length; index++) {
             lsValues[index] = localStorage.getItem(lsNames[index]);
-            
           }
-
-
         }
         if (new Date().getTime() > +expirationDate || !token) {
           vuexContext.dispatch("toggleSnackbar", {
@@ -400,13 +431,19 @@ const createStore = () => {
 
         for (let index = 0; index < lsNames.length; index++) {
           vuexContext.commit(commands[index], lsValues[index]);
-          
         }
-
       },
 
       logout(vuexContext) {
-        let lsNames = ["bio","name","uid","email","displayName","photoUrl","role"]
+        let lsNames = [
+          "bio",
+          "name",
+          "uid",
+          "email",
+          "displayName",
+          "photoUrl",
+          "role"
+        ];
 
         vuexContext.commit("clearToken");
         vuexContext.commit("clearUser");
@@ -417,7 +454,6 @@ const createStore = () => {
           Cookie.remove(property);
         });
 
-
         if (process.client) {
           localStorage.removeItem("token");
           localStorage.removeItem("tokenExpiration");
@@ -425,11 +461,10 @@ const createStore = () => {
           lsNames.forEach(property => {
             localStorage.removeItem(property);
           });
-
         }
       }
     },
-    
+
     getters: {
       loadedSiteUsers(state) {
         return state.loadedSiteUsers;

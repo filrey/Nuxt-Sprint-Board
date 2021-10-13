@@ -29,10 +29,11 @@
     <v-btn @click="showImageUploader = !showImageUploader">
       Toggle image upload</v-btn
     >
+    <v-btn @click="testRead()">Test Data Read</v-btn>
   </div>
 </template>
 <script>
-import axios from "axios";
+import firebase from "firebase";
 import imageUploader from "../../components/imageUploader.vue";
 export default {
   name: "create",
@@ -45,6 +46,14 @@ export default {
     };
   },
   methods: {
+    testRead() {
+      let res = this.$store.dispatch(
+        "dataRead",
+        "/users/G7gDf3MFVhP7Jzox4BWY2ZjzKQZ2"
+      );
+
+      console.log(res.email);
+    },
     onSubmit() {
       this.$store
         .dispatch("newTicket", {
