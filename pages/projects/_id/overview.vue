@@ -53,7 +53,7 @@
               this.project.tickets != undefined && this.project.tickets != null
             "
             :headers="ticketHeader"
-            :items="tickets"
+            :items="Object.entries(project.tickets)"
             :search="search"
           >
             <template v-slot:[`item.title`]="{ item }">
@@ -128,7 +128,7 @@
                 this.project.personnel != null
             "
             :headers="personnelHeader"
-            :items="personnel"
+            :items="Object.values(project.personnel)"
             :items-per-page="5"
             class="elevation-1"
           >
@@ -166,7 +166,7 @@
           <v-divider></v-divider>
 
           <v-timeline dense clipped>
-            <v-timeline-item v-for="log in this.project.logs" :key="log.data">
+            <v-timeline-item v-for="log in project.logs" :key="log.data">
               <template v-slot:icon>
                 <v-avatar>
                   <img :src="log.user.photoUrl" />
@@ -300,6 +300,7 @@
 </template>
 
 <script>
+import firebase from "firebase";
 import imageUploader from "../../../components/imageUploader.vue";
 import AssignPersonnel from "../../../components/assignPersonnel.vue";
 
@@ -308,37 +309,30 @@ export default {
   computed: {
     user() {
       return this.$store.getters.loadedUser;
-    },
-    personnel() {
-      let result = this.$store.getters.loadedProjects.find(
-        project => project.id == this.$route.params.id
-      );
-
-      return Object.values(result.personnel);
-    },
-    project() {
-      return this.$store.getters.loadedProjects.find(
-        project => project.id == this.$route.params.id
-      );
-    },
-    tickets() {
-      let project = this.$store.getters.loadedProjects.find(
-        project => project.id == this.$route.params.id
-      );
-
-      let tickets = Object.entries(project.tickets);
-
-      return tickets;
     }
   },
   middleware: ["check-auth", "auth"],
   components: { imageUploader, AssignPersonnel },
+  created() {
+    const dbRef = firebase.database().ref("/projects/" + this.$route.params.id);
 
+    dbRef.on("value", snapshot => {
+      this.project = snapshot.val();
+    });
+  },
   methods: {
     onProfileView(uid) {
-      this.$router.push({
-        path: `/profile/${uid}/view`
-      });
+      // If current user direct to profile
+      if (this.user.uid == uid) {
+        this.$router.push({
+          path: `/profile`
+        });
+      } else {
+        // else viewing other user direct to readOnly profile
+        this.$router.push({
+          path: `/profile/${uid}/view`
+        });
+      }
     },
     returnPhotoUrl(assigned) {
       if (assigned == undefined || assigned == null) {
@@ -445,6 +439,7 @@ export default {
   },
   data() {
     return {
+      project: "",
       deleteTicketId: "",
       deleteTicketModal: false,
       search: "",

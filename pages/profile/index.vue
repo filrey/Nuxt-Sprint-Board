@@ -6,7 +6,12 @@
       <v-col cols="12" md="8">
         <v-card class="py-3 px-5">
           <v-toolbar flat>
-            <v-chip class="ma-2" color="error" outlined label>
+            <v-chip
+              class="ma-2"
+              :color="returnRoleColor(user.role)"
+              outlined
+              label
+            >
               <v-icon left>
                 mdi-console-line
               </v-icon>
@@ -128,7 +133,6 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   name: "Profile",
   middleware: ["check-auth", "auth"],
@@ -149,6 +153,13 @@ export default {
       this.$store.dispatch("newDataSet", writeData);
 
       this.editProfile = false;
+    },
+    returnRoleColor(role) {
+      if (role === "Submitter") return "grey";
+      else if (role === "Project Manager") return "green";
+      else if (role === "Developer") return "blue";
+      else if (role === "Admin") return "red";
+      else return "default";
     }
   },
   data() {
