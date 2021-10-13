@@ -95,11 +95,29 @@
           <!-- Save Button -->
           <v-row>
             <v-col cols="12"></v-col>
+            <v-progress-linear
+              v-if="editProfile"
+              color="teal"
+              buffer-value="0"
+              class="mb-3"
+              :value="editProfile"
+              stream
+            >
+            </v-progress-linear>
+            <v-btn
+              class="ml-2 mb-2"
+              v-if="editProfile"
+              @click="editProfile = false"
+              color="error"
+              block
+              >Cancel
+            </v-btn>
             <v-btn
               class="ml-2"
               v-if="editProfile"
               @click="onSubmitEdit()"
               color="primary"
+              block
               >Save
             </v-btn>
           </v-row>

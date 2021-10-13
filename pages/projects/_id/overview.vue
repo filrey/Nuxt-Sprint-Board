@@ -26,13 +26,18 @@
 
     <v-row>
       <!-- Tickets -->
-      <v-col cols="12" md="6">
+      <v-col cols="12">
         <v-card>
-          <v-toolbar flat>
-            <v-card-title>Tickets</v-card-title>
-
+          <v-card-title>
+            Tickets
             <v-spacer></v-spacer>
-
+            <v-text-field
+              :search="search"
+              prepend-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
             <v-btn
               @click="dialog = true"
               type="file"
@@ -40,57 +45,65 @@
               depressed
               outlined
             >
-              <v-icon>mdi-plus</v-icon>New ticket
+              <v-icon>mdi-plus</v-icon>New
             </v-btn>
-          </v-toolbar>
-
+          </v-card-title>
           <v-data-table
             v-if="
               this.project.tickets != undefined && this.project.tickets != null
             "
             :headers="ticketHeader"
             :items="tickets"
-            :items-per-page="5"
-            class="elevation-1"
+            :search="search"
           >
-            <template v-slot:item.id="{ item }">
-              {{ item[0] }}
-            </template>
-
-            <template v-slot:item.title="{ item }">
+            <template v-slot:[`item.title`]="{ item }">
               {{ item[1].title }}
             </template>
 
-            <template v-slot:item.type="{ item }">
-              {{ item[1].type.toString() }}
-            </template>
-
-            <template v-slot:item.created="{ item }">
-              {{ item[1].created }}
-            </template>
-
-            <template v-slot:item.issuer="{ item }">
-              {{ item[1].issuer }}
-            </template>
-
-            <template v-slot:item.priority="{ item }">
+            <template v-slot:[`item.priority`]="{ item }">
               <v-chip :color="returnPriorityColor(item[1].priority)" label dark>
                 {{ item[1].priority }}
               </v-chip>
-              <!-- <v-btn @click="onDetails(item[0])">Details</v-btn> -->
             </template>
 
-            <template v-slot:item.actions="{ item }">
+            <template v-slot:[`item.type`]="{ item }">
+              {{ item[1].type.toString() }}
+            </template>
+
+            <template v-slot:[`item.created`]="{ item }">
+              {{ item[1].created }}
+            </template>
+
+            <template v-slot:[`item.updated`]="{ item }">
+              {{ item[1].updated }}
+            </template>
+
+            <template v-slot:[`item.assigned`]="{ item }">
+              <v-avatar size="36" class="mr-2">
+                <img :src="returnPhotoUrl(item[1].assigned)" />
+              </v-avatar>
+              {{ returnAssigned(item[1].assigned) }}
+            </template>
+
+            <template v-slot:[`item.actions`]="{ item }">
               <v-icon small class="mr-2" @click="onDetails(item[0])">
                 mdi-pencil
               </v-icon>
+
+              <v-icon
+                small
+                class="mr-2"
+                @click="(deleteTicketModal = true), (deleteTicketId = item[0])"
+              >
+                mdi-delete
+              </v-icon>
             </template>
           </v-data-table>
-
-          <v-card-title v-else>There are no tickets!</v-card-title>
         </v-card>
       </v-col>
+    </v-row>
 
+    <v-row>
       <!-- Personnel -->
       <v-col cols="12" md="6">
         <v-card>
@@ -119,48 +132,73 @@
             :items-per-page="5"
             class="elevation-1"
           >
-            <template v-slot:item.name="{ item }">
+            <template v-slot:[`item.name`]="{ item }">
               <v-avatar class="mr-2" color="grey" size="36" dark
                 ><v-img :src="item.photoUrl" max-height="36"
               /></v-avatar>
               {{ item.email }}
             </template>
 
-            <template v-slot:item.role="{ item }">
+            <template v-slot:[`item.role`]="{ item }">
               <v-chip :color="returnRoleColor(item.role)" label dark>
                 {{ item.role }}
               </v-chip>
+            </template>
+
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-icon small class="mr-2" @click="onProfileView(item.uid)">
+                mdi-account
+              </v-icon>
+
+              <v-icon small class="mr-2" @click="">
+                mdi-delete
+              </v-icon>
             </template>
           </v-data-table>
           <v-card-title v-else>No Personnel Assigned!</v-card-title>
         </v-card>
       </v-col>
 
-      <!-- Activity -->
-      <v-col cols="12">
+      <!-- Logs -->
+      <v-col cols="12" md="6">
         <v-card>
-          <v-card-title>Activity</v-card-title>
+          <v-card-title>Logs</v-card-title>
           <v-divider></v-divider>
 
-          <v-timeline>
-            <v-timeline-item>Filiberto added new Ticket</v-timeline-item>
-            <v-timeline-item class="text-right">
-              Task #2 Priority changed to High
-            </v-timeline-item>
-            <v-timeline-item
-              >Jessica has been added to the project</v-timeline-item
-            >
-            <v-timeline-item class="text-right">
-              Task #17 Marked as completed
-            </v-timeline-item>
-            <v-timeline-item>Filiberto assigned as manager</v-timeline-item>
-            <v-timeline-item class="text-right">
-              Project Creation
+          <v-timeline dense clipped>
+            <v-timeline-item v-for="log in this.project.logs" :key="log.data">
+              <template v-slot:icon>
+                <v-avatar>
+                  <img :src="log.user.photoUrl" />
+                </v-avatar>
+              </template>
+              <v-expansion-panels popout>
+                <v-expansion-panel>
+                  <v-expansion-panel-header
+                    ><div v-if="log.type == 'newTicket'">
+                      {{ log.user.name }} created a new ticket {{ log.time }}
+                    </div>
+                    <div v-if="log.type == 'detail'">
+                      {{ log.user.name }} updated ticket details
+                      {{ log.time }}
+                    </div>
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <div v-if="log.type == 'newTicket'">
+                      Ticket: "{{ log.data }}"
+                    </div>
+
+                    <div v-if="log.type == 'detail'">
+                      New Details: "{{ log.data }}"
+                    </div>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
             </v-timeline-item>
           </v-timeline>
         </v-card>
-      </v-col>
-    </v-row>
+      </v-col></v-row
+    >
 
     <v-spacer class="my-7"></v-spacer>
 
@@ -235,11 +273,33 @@
       :photoKey="'bannerUrl'"
       :mode="'update'"
     ></image-uploader>
+
+    <!-- Delete Ticket Modal -->
+    <v-dialog v-model="deleteTicketModal" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <v-icon class="mr-2">mdi-delete</v-icon>
+          <span class="headline">Delete Ticket</span>
+        </v-card-title>
+
+        <v-card-text
+          >Are you sure you want to delete this ticket? This action can not be
+          undone.</v-card-text
+        >
+        <v-card-actions>
+          <v-btn @click="(deleteTicketModal = false), (deleteTicketId = '')"
+            >Cancel</v-btn
+          >
+          <v-btn color="error" @click="onDeleteTicket(deleteTicketId)"
+            >Delete</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import firebase from "firebase";
 import imageUploader from "../../../components/imageUploader.vue";
 import AssignPersonnel from "../../../components/assignPersonnel.vue";
 
@@ -275,6 +335,23 @@ export default {
   components: { imageUploader, AssignPersonnel },
 
   methods: {
+    onProfileView(uid) {
+      this.$router.push({
+        path: `/profile/${uid}/view`
+      });
+    },
+    returnPhotoUrl(assigned) {
+      if (assigned == undefined || assigned == null) {
+        return "https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico";
+      }
+      return assigned.photoUrl;
+    },
+    returnAssigned(assigned) {
+      if (assigned == undefined || assigned == null) {
+        return "None Assigned";
+      }
+      return assigned.email;
+    },
     onDetails(ticketID) {
       this.$router.push({
         path:
@@ -286,21 +363,39 @@ export default {
         query: { project: this.project }
       });
     },
+    onDeleteTicket(ticketID) {
+      let writeData = {
+        path: "projects/" + this.$route.params.id + "/tickets/" + ticketID,
+        msgSucces: "Ticket deletion successful",
+        msgError: "Error while deleting ticket"
+      };
+      this.$store.dispatch("dataRemove", writeData);
+      this.deleteTicketId = "";
+      this.deleteTicketModal = false;
+    },
     onSubmitTicket() {
-      let timeStamp = new Date();
-      this.ticket.created =
-        timeStamp.getMonth() +
+      let now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let ampm = hours >= 12 ? "pm" : "am";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      let strTime = hours + ":" + minutes + " " + ampm;
+
+      let timestamp =
+        now.getMonth() +
         1 +
         "/" +
-        timeStamp.getDate() +
+        now.getDate() +
         "/" +
-        timeStamp.getFullYear() +
+        now.getFullYear() +
         " " +
-        timeStamp.getHours() +
-        ":" +
-        timeStamp.getMinutes();
+        strTime;
 
       this.ticket.issuer = this.user.email;
+      this.ticket.created = timestamp;
+      this.ticket.updated = timestamp;
 
       let writeData = {
         collection: this.ticket,
@@ -309,13 +404,27 @@ export default {
         msgError: "Error new ticket"
       };
 
+      let logData = {
+        collection: {
+          data: this.ticket,
+          time: timestamp,
+          user: this.user,
+          type: "newTicket"
+        },
+        path: "projects/" + this.$route.params.id + "/logs",
+        msgSucces: "New ticket Created",
+        msgError: "Error new ticket"
+      };
+
       this.$store.dispatch("newDataPush", writeData);
+      this.$store.dispatch("newDataPush", logData);
 
       this.ticket.title = "";
       this.ticket.description = "";
       this.ticket.priority = "";
       this.ticket.type = "";
       this.ticket.created = "";
+      this.ticket.updated = "";
 
       this.dialog = false;
     },
@@ -336,6 +445,9 @@ export default {
   },
   data() {
     return {
+      deleteTicketId: "",
+      deleteTicketModal: false,
+      search: "",
       assignPersonnelModal: false,
       bannerShow: true,
       bannerEdit: false,
@@ -346,6 +458,7 @@ export default {
         priority: "",
         type: "",
         created: "",
+        updated: "",
         issuer: ""
       },
 
@@ -376,20 +489,15 @@ export default {
         },
         { text: "Email", value: "email" },
         { text: "Role", value: "role" },
-        { text: "Last Online", value: "lastOnline" }
+        { text: "Actions", value: "actions", sortable: false }
       ],
       ticketHeader: [
-        {
-          text: "Id",
-          align: "start",
-          sortable: true,
-          value: "id"
-        },
         { text: "Title", value: "title" },
-        { text: "Type", value: "type" },
-        { text: "Created", value: "created" },
-        { text: "Issuer", value: "issuer" },
         { text: "Priority", value: "priority" },
+        { text: "Created", value: "created" },
+        { text: "Updated", value: "updated" },
+        { text: "Assigned", value: "assigned" },
+        { text: "Type", value: "type" },
         { text: "Actions", value: "actions", sortable: false }
       ]
     };

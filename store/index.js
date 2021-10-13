@@ -317,6 +317,27 @@ const createStore = () => {
         });
       },
 
+      // Deletes entry at specified path writeData.path
+      dataRemove(vuexContext, writeData){
+        firebase
+        .database()
+        .ref()
+        .child(writeData.path)
+        .remove()
+        .then(response => {
+          vuexContext.dispatch("toggleSnackbar", {
+            message: writeData.msgSucces,
+            color: "success"
+          });
+        })
+        .catch(err => {
+          vuexContext.dispatch("toggleSnackbar", {
+            message: writeData.msgError,
+            color: "error"
+          });
+        });
+      },
+
       initAuth(vuexContext, req) {
         let token;
         let expirationDate;
