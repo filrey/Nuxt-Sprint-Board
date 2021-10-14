@@ -75,8 +75,10 @@ export default {
   methods: {
     onAssignPersonnel() {
       let addedPersonnel = {};
-      for (let i = 0; i < this.loadedUsers.length; i++) {
-        addedPersonnel[this.loadedUsers[i].uid] = this.loadedUsers[i];
+      for (let i = 0; i < this.newPersonnelList.length; i++) {
+        addedPersonnel[
+          this.loadedUsers[this.newPersonnelList[i]].uid
+        ] = this.loadedUsers[this.newPersonnelList[i]];
       }
 
       let writeData = {
