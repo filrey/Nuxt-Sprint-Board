@@ -150,7 +150,11 @@
                 mdi-account
               </v-icon>
 
-              <v-icon small class="mr-2" @click="">
+              <v-icon
+                small
+                class="mr-2"
+                @click="(removePersonModal = true), (removePersonId = item.uid)"
+              >
                 mdi-delete
               </v-icon>
             </template>
@@ -165,7 +169,7 @@
           <v-card-title>Logs</v-card-title>
           <v-divider></v-divider>
 
-          <v-timeline dense clipped>
+          <v-timeline dense clipped class="timeLineScroll">
             <v-timeline-item v-for="log in project.logs" :key="log.data">
               <template v-slot:icon>
                 <v-avatar>
@@ -296,6 +300,31 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Remove Person Modal -->
+    <v-dialog v-model="removePersonModal" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <v-icon class="mr-2">mdi-delete</v-icon>
+          <span class="headline">Remove Person</span>
+        </v-card-title>
+
+        <v-card-text
+          >Are you sure you want to remove this person from the
+          project?</v-card-text
+        >
+        <v-card-actions>
+          <v-btn @click="(removePersonModal = false), (removePersonId = '')"
+            >Cancel</v-btn
+          >
+          <v-btn
+            color="error"
+            @click="onRemovePerson(removePersonId), (removePersonModal = false)"
+            >Delete</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -313,10 +342,11 @@ export default {
   },
   middleware: ["check-auth", "auth"],
   components: { imageUploader, AssignPersonnel },
-  created() {
+  mounted() {
     const dbRef = firebase.database().ref("/projects/" + this.$route.params.id);
 
     dbRef.on("value", snapshot => {
+      this.project = {};
       this.project = snapshot.val();
     });
   },
@@ -362,6 +392,16 @@ export default {
         path: "projects/" + this.$route.params.id + "/tickets/" + ticketID,
         msgSucces: "Ticket deletion successful",
         msgError: "Error while deleting ticket"
+      };
+      this.$store.dispatch("dataRemove", writeData);
+      this.deleteTicketId = "";
+      this.deleteTicketModal = false;
+    },
+    onRemovePerson(uid) {
+      let writeData = {
+        path: "projects/" + this.$route.params.id + "/personnel/" + uid,
+        msgSucces: "Personnel removed",
+        msgError: "Error while removing personnel"
       };
       this.$store.dispatch("dataRemove", writeData);
       this.deleteTicketId = "";
@@ -440,6 +480,8 @@ export default {
   data() {
     return {
       project: "",
+      removePersonId: "",
+      removePersonModal: "",
       deleteTicketId: "",
       deleteTicketModal: false,
       search: "",
@@ -505,5 +547,12 @@ export default {
   max-width: 160px;
   position: relative;
   bottom: -154px;
+}
+
+.timeLineScroll {
+  max-height: 377px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
 }
 </style>

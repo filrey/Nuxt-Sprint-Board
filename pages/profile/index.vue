@@ -133,13 +133,17 @@
 </template>
 
 <script>
+import firebase from "firebase";
 export default {
   name: "Profile",
   middleware: ["check-auth", "auth"],
-  computed: {
-    user() {
-      return this.$store.getters.loadedUser;
-    }
+  created() {
+    let loadedUser = this.$store.getters.loadedUser;
+    const dbRef = firebase.database().ref("/users/" + loadedUser.uid);
+
+    dbRef.on("value", snapshot => {
+      this.user = snapshot.val();
+    });
   },
   methods: {
     onSubmitEdit() {
@@ -164,6 +168,7 @@ export default {
   },
   data() {
     return {
+      user: "",
       editProfile: false,
       breadcrumbs: [
         {

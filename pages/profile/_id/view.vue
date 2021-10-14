@@ -97,7 +97,7 @@ export default {
   name: "profileView",
   middleware: ["check-auth", "auth"],
   created() {
-    const dbRef = firebase.database().ref("/users/" + this.$route.params.id);
+    const dbRef = firebase.database().ref(`/users/${this.$route.params.id}`);
 
     dbRef.on("value", snapshot => {
       this.profile = snapshot.val();

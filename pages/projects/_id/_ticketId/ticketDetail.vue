@@ -165,11 +165,11 @@
           <v-row>
             <v-col class="timeLineScroll" cols="12">
               <v-timeline
-                v-if="this.info.ticket.comments != undefined"
+                v-if="comments != undefined"
                 :dense="$vuetify.breakpoint.mdAndDown"
               >
                 <v-timeline-item
-                  v-for="comment in this.info.ticket.comments"
+                  v-for="comment in comments"
                   :key="comment.msg"
                   :left="comment.user.uid !== user.uid"
                   :right="comment.user.uid == user.uid"
@@ -235,14 +235,14 @@
     </v-row>
 
     <v-row>
-      <!-- Ticket History -->
+      <!-- Ticket Logs -->
       <v-col cols="12" lg="6">
         <v-card class="py-3 px-5">
           <v-toolbar flat><v-toolbar-title>Log</v-toolbar-title> </v-toolbar>
           <v-row>
             <v-col cols="12">
               <v-divider></v-divider>
-              <v-timeline dense clipped>
+              <v-timeline class="timeLineScroll" dense clipped>
                 <v-timeline-item
                   v-for="log in this.info.ticket.logs"
                   :key="log.data"
@@ -287,9 +287,21 @@
 </template>
 
 <script>
+import firebase from "firebase";
 export default {
   name: "ticketDetail",
   middleware: ["check-auth", "auth"],
+  mounted() {
+    const dbRef = firebase
+      .database()
+      .ref(
+        `/projects/${this.$route.params.id}/tickets/${this.$route.params.ticketId}/comments`
+      );
+
+    dbRef.on("value", snapshot => {
+      this.comments = snapshot.val();
+    });
+  },
   computed: {
     info() {
       let idData = this.$route.path.split("/");
@@ -439,6 +451,7 @@ export default {
   },
   data() {
     return {
+      comments: "",
       editTicket: false,
       newComment: ""
     };

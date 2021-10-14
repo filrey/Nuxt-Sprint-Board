@@ -7,7 +7,7 @@
       <v-col cols="12" md="6">
         <v-select
           v-model="userSelect"
-          :items="allUsers"
+          :items="Object.values(users)"
           item-text="email"
           item-value="uid"
           prepend-icon="mdi-account"
@@ -49,9 +49,9 @@
           </v-toolbar>
 
           <v-data-table
-            v-if="this.allUsers != undefined && this.allUsers != null"
+            v-if="users != undefined && users != null"
             :headers="personnelHeader"
-            :items="allUsers"
+            :items="Object.values(users)"
             :items-per-page="5"
             class="elevation-1"
           >
@@ -76,14 +76,18 @@
 </template>
 
 <script>
+import firebase from "firebase";
 export default {
   name: "users",
   middleware: ["check-auth", "auth"],
-  computed: {
-    allUsers() {
-      return this.$store.getters.loadedSiteUsers;
-    }
+  created() {
+    const dbRef = firebase.database().ref(`/users`);
+
+    dbRef.on("value", snapshot => {
+      this.users = snapshot.val();
+    });
   },
+
   methods: {
     onSubmitRoleChange(users, role) {
       users.forEach(user => {
@@ -110,6 +114,7 @@ export default {
   },
   data() {
     return {
+      users: "",
       role: "",
       userSelect: [],
       personnelHeader: [
