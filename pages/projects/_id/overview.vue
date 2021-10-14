@@ -24,8 +24,8 @@
       </v-btn>
     </v-parallax>
 
+    <!-- Tickets -->
     <v-row>
-      <!-- Tickets -->
       <v-col cols="12">
         <v-card>
           <v-card-title>
@@ -102,9 +102,8 @@
         </v-card>
       </v-col>
     </v-row>
-
+    <!-- Personnel -->
     <v-row>
-      <!-- Personnel -->
       <v-col cols="12" md="6">
         <v-card>
           <v-toolbar flat>
