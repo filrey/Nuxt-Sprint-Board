@@ -41,7 +41,8 @@
             </v-col>
             <v-col cols="6">
               <v-select
-                v-model="info.ticket.assigned"
+                @change="changeAssigned(info.ticket, $event)"
+                :value="this.originalAssigned"
                 :disabled="!editTicket"
                 :items="Object.values(info.project.personnel)"
                 item-text="email"
@@ -129,7 +130,7 @@
             v-if="editTicket"
             color="teal"
             buffer-value="0"
-            :value="editTicket"
+            :value="0"
             stream
           >
           </v-progress-linear>
@@ -298,8 +299,18 @@ export default {
         `/projects/${this.$route.params.id}/tickets/${this.$route.params.ticketId}/comments`
       );
 
+    const assignedRef = firebase
+      .database()
+      .ref(
+        `/projects/${this.$route.params.id}/tickets/${this.$route.params.ticketId}/assigned`
+      );
+
     dbRef.on("value", snapshot => {
       this.comments = snapshot.val();
+    });
+
+    assignedRef.on("value", snapshot => {
+      this.originalAssigned = snapshot.val();
     });
   },
   computed: {
@@ -343,6 +354,9 @@ export default {
     }
   },
   methods: {
+    changeAssigned(ticket, person) {
+      ticket.assigned = person;
+    },
     addComment() {
       let now = new Date();
       let hours = now.getHours();
@@ -417,6 +431,23 @@ export default {
         strTime;
 
       this.info.ticket["updated"] = timestamp;
+      if (this.originalAssigned != undefined) {
+        let idRemove = {
+          path: `users/${this.originalAssigned.uid}/assignedTickets/${this.$route.params.ticketId}`,
+          msgSucces: "New user assigned",
+          msgError: "Error while assigning personnel"
+        };
+        this.$store.dispatch("dataRemove", idRemove);
+      }
+
+      let assignTicket = {
+        collection: {
+          [this.$route.params.ticketId]: this.$route.params.ticketId
+        },
+        path: `users/${this.info.ticket.assigned.uid}/assignedTickets`,
+        msgSucces: "New user assigned",
+        msgError: "Error while assigning personnel"
+      };
 
       let writeData = {
         collection: this.info.ticket,
@@ -424,6 +455,8 @@ export default {
         msgSucces: "Ticket" + idData[3] + " updated",
         msgError: "Error while updating ticket"
       };
+
+      this.$store.dispatch("newDataUpdate", assignTicket);
 
       this.$store.dispatch("newDataSet", writeData);
 
@@ -446,11 +479,14 @@ export default {
 
       this.$store.dispatch("newDataPush", logData);
 
+      this.originalAssigned = this.info.ticket.assigned;
+
       this.editTicket = false;
     }
   },
   data() {
     return {
+      originalAssigned: null,
       comments: "",
       editTicket: false,
       newComment: ""

@@ -398,12 +398,12 @@ export default {
     },
     onRemovePerson(uid) {
       let idRemove = {
-        path: "users/" + uid + "/assignedProjects/" + this.$route.params.id,
+        path: `users/${uid}/assignedProjects/${this.$route.params.id}`,
         msgSucces: "Personnel removed",
         msgError: "Error while removing personnel"
       };
       let writeData = {
-        path: "projects/" + this.$route.params.id + "/personnel/" + uid,
+        path: `projects/${this.$route.params.id}/personnel/${uid}`,
         msgSucces: "Personnel removed",
         msgError: "Error while removing personnel"
       };
