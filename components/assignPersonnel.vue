@@ -76,14 +76,23 @@ export default {
     onAssignPersonnel() {
       let addedPersonnel = {};
       for (let i = 0; i < this.newPersonnelList.length; i++) {
-        addedPersonnel[
-          this.loadedUsers[this.newPersonnelList[i]].uid
-        ] = this.loadedUsers[this.newPersonnelList[i]];
+        let newPersonId = this.loadedUsers[this.newPersonnelList[i]].uid;
+        let newperson = this.loadedUsers[this.newPersonnelList[i]];
+        addedPersonnel[newPersonId] = newperson;
+
+        let assignData = {
+          collection: { [this.$route.params.id]: this.$route.params.id },
+          path: `users/${newPersonId}/assignedProjects`,
+          msgSucces: "Personnel assigned",
+          msgError: "Error while assigning personnel"
+        };
+
+        this.$store.dispatch("newDataUpdate", assignData);
       }
 
       let writeData = {
         collection: addedPersonnel,
-        path: "projects/" + this.$route.params.id + "/personnel",
+        path: `projects/${this.$route.params.id}/personnel`,
         msgSucces: "Personnel assigned",
         msgError: "Error while assigning personnel"
       };

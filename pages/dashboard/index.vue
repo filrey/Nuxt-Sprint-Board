@@ -1,24 +1,13 @@
 <template>
   <div>
     Dashboard Vue
-    <h1>Current Project</h1>
-    <Ticket-List :tickets="this.tickets" />
-    <h1>Pie chart</h1>
-    <v-progress-circular
-      :size="100"
-      color="purple"
-      :value="75"
-      :width="20"
-    ></v-progress-circular>
+    <h1>Projects and Tickets</h1>
+    <h1>Statistics</h1>
   </div>
 </template>
 
 <script>
-import TicketList from "@/components/tickets/TicketList";
 export default {
-  components: {
-    TicketList,
-  },
   middleware: ["check-auth", "auth"],
 
   created() {
@@ -33,7 +22,7 @@ export default {
           priority: "high",
           status: "open",
           type: "bug",
-          created: new Date(),
+          created: new Date()
         },
         {
           title: "title 2",
@@ -41,10 +30,10 @@ export default {
           priority: "high",
           status: "open",
           type: "bug",
-          created: new Date(),
-        },
-      ],
+          created: new Date()
+        }
+      ]
     };
-  },
+  }
 };
 </script>

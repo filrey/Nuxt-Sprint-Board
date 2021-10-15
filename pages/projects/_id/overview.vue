@@ -272,7 +272,7 @@
     <!-- Banner image uploader -->
     <image-uploader
       :showModal.sync="bannerEdit"
-      :path="'projects/' + this.project.id"
+      :path="'projects/' + this.$route.params.id"
       :photoKey="'bannerUrl'"
       :mode="'update'"
     ></image-uploader>
