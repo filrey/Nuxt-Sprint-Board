@@ -433,7 +433,7 @@ export default {
       this.info.ticket["updated"] = timestamp;
       if (this.originalAssigned != undefined) {
         let idRemove = {
-          path: `users/${this.originalAssigned.uid}/assignedTickets/${this.$route.params.ticketId}`,
+          path: `users/${this.originalAssigned.uid}/assignedTickets/${this.$route.params.id}/${this.$route.params.ticketId}`,
           msgSucces: "New user assigned",
           msgError: "Error while assigning personnel"
         };
@@ -444,7 +444,7 @@ export default {
         collection: {
           [this.$route.params.ticketId]: this.$route.params.ticketId
         },
-        path: `users/${this.info.ticket.assigned.uid}/assignedTickets`,
+        path: `users/${this.info.ticket.assigned.uid}/assignedTickets/${this.$route.params.id}`,
         msgSucces: "New user assigned",
         msgError: "Error while assigning personnel"
       };

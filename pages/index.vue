@@ -4,8 +4,9 @@
       <section id="hero">
         <v-row no-gutters>
           <v-img
+            :gradient="`to bottom, rgba(0, 0, 0, .3), rgba(0, 0, 0, .3)`"
             :min-height="'calc(100vh - ' + $vuetify.application.top + 'px)'"
-            src="https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1951&q=80"
+            src="https://images.unsplash.com/photo-1507037102386-199766bac257?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1158&q=80"
           >
             <v-theme-provider dark>
               <v-container fill-height>
@@ -17,16 +18,7 @@
                   <v-col class="white--text text-center" cols="12" tag="h1">
                     <br />
 
-                    <span
-                      :class="[
-                        $vuetify.breakpoint.smAndDown
-                          ? 'display-3'
-                          : 'display-4'
-                      ]"
-                      class="font-weight-black"
-                    >
-                      AGILE SPRINT BOARD
-                    </span>
+                    <login></login>
                   </v-col>
 
                   <v-btn
@@ -254,8 +246,10 @@
 </template>
 
 <script>
+import Login from "../components/login.vue";
 export default {
   name: "welcome",
+  components: { Login },
   data() {
     return {
       articles: [
