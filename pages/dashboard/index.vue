@@ -46,33 +46,50 @@ export default {
     }
   },
   mounted() {
+    let projectResults = [];
+    let projectRefs = [];
+    let projectIds;
     const userRef = firebase.database().ref(`/users/${this.loadedUser.uid}`);
-    userRef.on("value", snapshot => {
-      this.user = snapshot.val();
-      let projectResult = Object.values(snapshot.val().assignedProjects);
-
-      projectResult.forEach(project => {
-        let projRef = firebase.database().ref(`/projects/${project}`);
-
-        projRef.on("value", snapshot => {
-          this.projects[project] = snapshot.val();
+    userRef
+      .once("value", snapshot => {
+        this.user = snapshot.val();
+        projectIds = Object.values(snapshot.val().assignedProjects);
+      })
+      .then(res => {
+        projectIds.forEach(project => {
+          projectRefs.push(firebase.database().ref(`/projects/${project}`));
         });
+      })
+      .then(res => {
+        let i = 0;
+        projectRefs.forEach(project => {
+          project
+            .once("value", snapshot => {
+              projectResults.push(snapshot.val());
+            })
+            .then(res => {
+              let projectId = projectIds[i];
+              let project = projectResults[i];
+              for (let ticket in project.tickets) {
+                let amendedTicket = project.tickets[ticket];
 
-        if (project in this.user.assignedTickets) {
-          for (let ticket in this.projects[project].tickets) {
-            let amendedTicket = this.projects[project].tickets[ticket];
-            if (amendedTicket.hasOwnProperty("assigned")) {
-              if (amendedTicket.assigned.uid == this.user.uid) {
-                amendedTicket["projectId"] = project;
-                amendedTicket["projectName"] = this.projects[project].name;
-                amendedTicket["ticketId"] = ticket;
-                this.tickets.push(amendedTicket);
+                if (amendedTicket.assigned.uid == this.user.uid) {
+                  amendedTicket["projectId"] = projectId;
+                  amendedTicket["projectName"] = project.name;
+                  amendedTicket["ticketId"] = ticket;
+                  this.tickets.push(amendedTicket);
+                }
               }
-            }
-          }
-        }
+              i++;
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        });
+      })
+      .catch(err => {
+        console.log(err);
       });
-    });
   },
   methods: {
     onDetails(projectId, ticketID) {
@@ -85,7 +102,6 @@ export default {
   data() {
     return {
       user: "",
-      projects: {},
       tickets: [],
       search: "",
       ticketHeader: [
