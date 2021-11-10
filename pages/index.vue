@@ -40,7 +40,7 @@
         <div class="py-12"></div>
 
         <v-container class="text-center">
-          <h2 class="display-2 font-weight-bold mb-3">ABOUT THIS APP</h2>
+          <h2 class="display-2 font-weight-bold mb-3">ABOUT</h2>
 
           <v-responsive class="mx-auto mb-8" width="56">
             <v-divider class="mb-1"></v-divider>
@@ -52,22 +52,27 @@
             class="mx-auto title font-weight-light mb-8"
             max-width="720"
           >
-            Vuetify is the #1 component library for Vue.js and has been in
-            active development since 2016. The goal of the project is to provide
-            users with everything that is needed to build rich and engaging web
-            applications using the Material Design specification. It
-            accomplishes that with a consistent update cycle, Long-term Support
-            (LTS) for previous versions, responsive community engagement, a vast
-            ecosystem of resources and a dedication to quality components.
+            Agile-Sprint-Board is a mobile first web application designed with
+            the intention to create a stylish and accessible workflow for
+            project development. Manage user roles, create projects, and
+            collaborate in completing tickets with your team. I hope you enjoy
+            the app! If you have the chance check out some of my other projects
+            in the link below.
           </v-responsive>
 
           <v-avatar class="elevation-12 mb-12" size="128">
-            <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
+            <v-img :src="require('@/assets/images/grad.jpg')"></v-img>
           </v-avatar>
 
           <div></div>
 
-          <v-btn color="grey" href="https://vuetifyjs.com" outlined large>
+          <v-btn
+            color="grey"
+            href="https://filibertoreyes.dev/"
+            target="blank"
+            outlined
+            large
+          >
             <span class="grey--text text--darken-1 font-weight-bold">
               My other projects
             </span>
@@ -77,78 +82,6 @@
         <div class="py-12"></div>
       </section>
 
-      <section id="features" class="grey lighten-3">
-        <div class="py-12"></div>
-
-        <v-container class="text-center">
-          <h2 class="display-2 font-weight-bold mb-3">FEATURES</h2>
-
-          <v-responsive class="mx-auto mb-12" width="56">
-            <v-divider class="mb-1"></v-divider>
-
-            <v-divider></v-divider>
-          </v-responsive>
-
-          <v-row>
-            <v-col
-              v-for="({ icon, title, text }, i) in features"
-              :key="i"
-              cols="12"
-              md="4"
-            >
-              <v-card class="py-12 px-4" color="grey lighten-5" flat>
-                <v-theme-provider dark>
-                  <div>
-                    <v-avatar color="primary" size="88">
-                      <v-icon large v-text="icon"></v-icon>
-                    </v-avatar>
-                  </div>
-                </v-theme-provider>
-
-                <v-card-title
-                  class="justify-center font-weight-black text-uppercase"
-                  v-text="title"
-                ></v-card-title>
-
-                <v-card-text class="subtitle-1" v-text="text"> </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-container>
-
-        <div class="py-12"></div>
-      </section>
-
-      <section id="stats">
-        <v-parallax
-          :height="$vuetify.breakpoint.smAndDown ? 700 : 500"
-          src="https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80"
-        >
-          <v-container fill-height>
-            <v-row class="mx-auto">
-              <v-col
-                v-for="[value, title] of stats"
-                :key="title"
-                cols="12"
-                md="3"
-              >
-                <div class="text-center">
-                  <div
-                    class="display-3 font-weight-black mb-4"
-                    v-text="value"
-                  ></div>
-
-                  <div
-                    class="title font-weight-regular text-uppercase"
-                    v-text="title"
-                  ></div>
-                </div>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-parallax>
-      </section>
-
       <section id="blog">
         <div class="py-12"></div>
 
@@ -156,7 +89,7 @@
           <h2
             class="display-2 font-weight-bold mb-3 text-uppercase text-center"
           >
-            Blog
+            Features
           </h2>
 
           <v-responsive class="mx-auto mb-12" width="56">
@@ -186,9 +119,9 @@
 
               <div class="title font-weight-light mb-5" v-text="text"></div>
 
-              <v-btn class="ml-n4 font-weight-black" text>
+              <!-- <v-btn class="ml-n4 font-weight-black" text>
                 Continue Reading
-              </v-btn>
+              </v-btn> -->
             </v-col>
           </v-row>
         </v-container>
@@ -196,15 +129,46 @@
         <div class="py-12"></div>
       </section>
 
-      <!-- <v-sheet id="contact" color="#333333" dark tag="section" tile>
+      <section id="stats">
+        <v-parallax
+          :height="$vuetify.breakpoint.smAndDown ? 700 : 750"
+          :src="require('@/assets/images/vueBg.png')"
+        >
+          <v-container fill-height>
+            <v-row class="mx-auto">
+              <v-col
+                v-for="[value, title] of stats"
+                :key="title"
+                cols="12"
+                md="12"
+              >
+                <div class="vueDark text-center">
+                  <div
+                    class="display-3 font-weight-black mb-4"
+                    v-text="value"
+                  ></div>
+
+                  <v-btn
+                    :href="title"
+                    fab
+                    x-large
+                    color="#425366"
+                    class="vueLight"
+                    target="blank"
+                    ><v-icon>mdi-vuejs</v-icon></v-btn
+                  >
+                </div>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-parallax>
+      </section>
+
+      <section id="features" class="grey lighten-3">
         <div class="py-12"></div>
 
-        <v-container>
-          <h2
-            class="display-2 font-weight-bold mb-3 text-uppercase text-center"
-          >
-            Contact Me
-          </h2>
+        <v-container class="text-center">
+          <h2 class="display-2 font-weight-bold mb-3">TECH STACK</h2>
 
           <v-responsive class="mx-auto mb-12" width="56">
             <v-divider class="mb-1"></v-divider>
@@ -212,35 +176,44 @@
             <v-divider></v-divider>
           </v-responsive>
 
-          <v-theme-provider light>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field flat label="Name*" solo></v-text-field>
-              </v-col>
+          <v-row>
+            <v-col
+              v-for="({ link, icon, title, text }, i) in features"
+              :key="i"
+              cols="12"
+              md="4"
+            >
+              <v-card class="py-12 px-4" color="grey lighten-5" flat>
+                <v-theme-provider dark>
+                  <div>
+                    <v-avatar color="primary" size="88">
+                      <v-icon large v-text="icon"></v-icon>
+                    </v-avatar>
+                  </div>
+                </v-theme-provider>
 
-              <v-col cols="12">
-                <v-text-field flat label="Email*" solo></v-text-field>
-              </v-col>
+                <v-card-title
+                  class="justify-center font-weight-black text-uppercase"
+                  v-text="title"
+                ></v-card-title>
 
-              <v-col cols="12">
-                <v-text-field flat label="Subject*" solo></v-text-field>
-              </v-col>
-
-              <v-col cols="12">
-                <v-textarea flat label="Message*" solo></v-textarea>
-              </v-col>
-
-              <v-col class="mx-auto" cols="auto">
-                <v-btn color="accent" x-large>
-                  Submit
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-theme-provider>
+                <v-card-text class="subtitle-1" v-text="text"> </v-card-text>
+                <v-card-actions
+                  ><v-btn
+                    v-text="title + ` Site`"
+                    :href="link"
+                    target="blank"
+                    color="primary"
+                    text
+                  ></v-btn
+                ></v-card-actions>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-container>
 
         <div class="py-12"></div>
-      </v-sheet> -->
+      </section>
     </section>
   </div>
 </template>
@@ -255,52 +228,49 @@ export default {
       articles: [
         {
           src:
-            "https://images.unsplash.com/photo-1423784346385-c1d4dac9893a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80",
+            "https://images.unsplash.com/photo-1506606352681-649023fac596?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
           title: "Mobile first & Responsive",
           text:
-            "Phasellus lorem enim, luctus ut velit eget, convallis egestas eros. Sed ornare ligula eget tortor tempor, quis porta tellus dictum."
+            "Thanks to Vuetify's mobile first approach to design Agile-Sprint-Board just works responsively right out of the box whether it's on a phone, tablet or desktop computer."
+        },
+        {
+          src: "https://miro.medium.com/max/1024/1*HFlYgB6gVLc4Su9HsB9MZg.png",
+          title: "NoSQL backend with Firebase",
+          text:
+            "The Firebase Realtime Database is a cloud-hosted database. Data is stored as JSON and synchronized in realtime to every connected client."
         },
         {
           src:
-            "https://images.unsplash.com/photo-1475938476802-32a7e851dad1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80",
-          title: "Think outside the box",
+            "https://images.unsplash.com/photo-1523567271574-cfcd2ba942ff?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1173&q=80",
+          title: "Dynamic Ticketing System",
           text:
-            "Nam ut leo ipsum. Maecenas pretium aliquam feugiat. Aenean vel tempor est, vitae tincidunt risus. Sed sodales vestibulum nibh."
-        },
-        {
-          src:
-            "https://images.unsplash.com/photo-1416339442236-8ceb164046f8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1892&q=80",
-          title: "Small changes, big difference",
-          text:
-            "Vestibulum in dictum velit, in rhoncus nibh. Maecenas neque libero, interdum a dignissim in, aliquet vitae lectus. Phasellus lorem enim, luctus ut velit eget."
+            "Manage and priortize project backlog's with ticket types and collaborate with other team members using the comment system."
         }
       ],
       features: [
         {
-          icon: "mdi-account-group-outline",
-          title: "Vibrant Community",
+          link: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+          icon: "mdi-language-javascript",
+          title: "Javascript",
           text:
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto cupiditate sint possimus quidem atque harum excepturi nemo velit tempora! Enim inventore fuga, qui ipsum eveniet facilis obcaecati corrupti asperiores nam"
+            "JavaScript, often abbreviated as JS, is a programming language that conforms to the ECMAScript specification. JavaScript is high-level, often just-in-time compiled and multi-paradigm. It has dynamic typing, prototype-based object-orientation and first-class functions."
         },
         {
-          icon: "mdi-update",
-          title: "Frequent Updates",
+          link: "https://nuxtjs.org/",
+          icon: "mdi-nuxt",
+          title: "Nuxt",
           text:
-            "Sed ut elementum justo. Suspendisse non justo enim. Vestibulum cursus mauris dui, a luctus ex blandit. Lorem ipsum dolor sit amet consectetur adipisicing elit. qui ipsum eveniet facilis obcaecati corrupti consectetur adipisicing elit."
+            "Nuxt.js is a free and open source web application framework based on Vue.js, Node.js, Webpack and Babel.js. Nuxt is inspired by Next.js, which is a framework of similar purpose, based on React.js. The framework is advertised as a `meta-framework for universal applications`."
         },
         {
-          icon: "mdi-shield-outline",
-          title: "Long-term Support",
+          link: "https://vuetifyjs.com/en/",
+          icon: "mdi-vuetify",
+          title: "Vuetify",
           text:
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto cupiditate sint possimus quidem atque harum excepturi nemo velit tempora! Enim inventore fuga, qui ipsum eveniet facilis obcaecati corrupti asperiores nam"
+            "Vuetify is a complete UI framework built on top of Vue.js. The goal of the project is to provide developers with the tools they need to build rich and engaging user experiences. Vuetify is designed from the ground up to be easy to learn and rewarding to master with hundreds of carefully crafted components from the Material Design specification"
         }
       ],
-      stats: [
-        ["24k", "Github Stars"],
-        ["330+", "Releases"],
-        ["1m", "Downloads/mo"],
-        ["5m", "Total Downloads"]
-      ]
+      stats: [["Powered by Vue.js", "https://vuejs.org/"]]
     };
   }
 };
@@ -309,5 +279,11 @@ export default {
 <style lang="css" scoped>
 .heroBG {
   background-image: url("../assets/images/workdesk.jpg");
+}
+.vueDark {
+  color: #425366;
+}
+.vueLight {
+  color: #4db986;
 }
 </style>

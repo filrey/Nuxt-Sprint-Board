@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="my-3 mx-5">
+    <v-breadcrumbs :items="breadcrumbs" divider="-"></v-breadcrumbs>
     <v-row>
       <v-col cols="12">
         <v-card
@@ -9,6 +10,11 @@
             :items="this.tickets"
             :search="search"
           >
+            <template v-slot:[`item.priority`]="{ item }">
+              <v-chip :color="returnPriorityColor(item.priority)" label dark>
+                {{ item.priority }}
+              </v-chip>
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <v-icon
                 small
@@ -16,14 +22,6 @@
                 @click="onDetails(item.projectId, item.ticketId)"
               >
                 mdi-pencil
-              </v-icon>
-
-              <v-icon
-                small
-                class="mr-2"
-                @click="(deleteTicketModal = true), (deleteTicketId = item[0])"
-              >
-                mdi-delete
               </v-icon>
             </template>
           </v-data-table>
@@ -46,6 +44,7 @@ export default {
     }
   },
   mounted() {
+    let exportProjects = {};
     let projectResults = [];
     let projectRefs = [];
     let projectIds;
@@ -70,14 +69,16 @@ export default {
             .then(res => {
               let projectId = projectIds[i];
               let project = projectResults[i];
+              exportProjects[projectId] = project;
               for (let ticket in project.tickets) {
                 let amendedTicket = project.tickets[ticket];
-
-                if (amendedTicket.assigned.uid == this.user.uid) {
-                  amendedTicket["projectId"] = projectId;
-                  amendedTicket["projectName"] = project.name;
-                  amendedTicket["ticketId"] = ticket;
-                  this.tickets.push(amendedTicket);
+                if (amendedTicket.hasOwnProperty("assigned")) {
+                  if (amendedTicket.assigned.uid == this.user.uid) {
+                    amendedTicket["projectId"] = projectId;
+                    amendedTicket["projectName"] = project.name;
+                    amendedTicket["ticketId"] = ticket;
+                    this.tickets.push(amendedTicket);
+                  }
                 }
               }
               i++;
@@ -90,6 +91,8 @@ export default {
       .catch(err => {
         console.log(err);
       });
+
+    this.projects = exportProjects;
   },
   methods: {
     onDetails(projectId, ticketID) {
@@ -97,12 +100,20 @@ export default {
         path: "/projects/" + projectId + "/" + ticketID + "/ticketDetail",
         query: { project: this.projects[projectId] }
       });
+    },
+    returnPriorityColor(priority) {
+      if (priority === "Lowest") return "grey";
+      else if (priority === "Low") return "brown";
+      else if (priority === "Medium") return "blue";
+      else if (priority === "High") return "red";
+      else return "white";
     }
   },
   data() {
     return {
       user: "",
       tickets: [],
+      projects: [],
       search: "",
       ticketHeader: [
         { text: "Title", value: "title" },
@@ -113,6 +124,18 @@ export default {
         { text: "Assigned", value: "assigned.name" },
         { text: "Type", value: "type" },
         { text: "Actions", value: "actions", sortable: false }
+      ],
+      breadcrumbs: [
+        {
+          text: "Home",
+          disabled: false,
+          href: "/"
+        },
+        {
+          text: "Dashboard",
+          disabled: true,
+          href: "/dashboard"
+        }
       ]
     };
   }
