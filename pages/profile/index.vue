@@ -145,6 +145,11 @@ export default {
       this.user = snapshot.val();
     });
   },
+  head() {
+    return {
+      title: "Profile"
+    };
+  },
   methods: {
     onSubmitEdit() {
       let writeData = {

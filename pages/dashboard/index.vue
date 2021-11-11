@@ -43,6 +43,11 @@ export default {
       return this.$store.getters.loadedUser;
     }
   },
+  head() {
+    return {
+      title: "Dashboard"
+    };
+  },
   mounted() {
     let exportProjects = {};
     let projectResults = [];

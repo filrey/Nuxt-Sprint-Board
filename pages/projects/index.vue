@@ -103,6 +103,11 @@ export default {
       return this.$store.getters.loadedProjects;
     }
   },
+  head() {
+    return {
+      title: "Projects"
+    };
+  },
   data() {
     return {
       dialog: false,

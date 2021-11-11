@@ -103,6 +103,11 @@ export default {
       this.profile = snapshot.val();
     });
   },
+  head() {
+    return {
+      title: "Profile"
+    };
+  },
   methods: {
     returnRoleColor(role) {
       if (role === "Submitter") return "grey";

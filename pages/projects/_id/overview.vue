@@ -341,6 +341,11 @@ export default {
   },
   middleware: ["check-auth", "auth"],
   components: { imageUploader, AssignPersonnel },
+  head() {
+    return {
+      title: "Project Overview"
+    };
+  },
   mounted() {
     const dbRef = firebase.database().ref("/projects/" + this.$route.params.id);
 

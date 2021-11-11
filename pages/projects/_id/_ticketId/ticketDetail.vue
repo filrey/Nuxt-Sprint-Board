@@ -292,6 +292,11 @@ import firebase from "firebase";
 export default {
   name: "ticketDetail",
   middleware: ["check-auth", "auth"],
+  head() {
+    return {
+      title: "Ticket Details"
+    };
+  },
   mounted() {
     const dbRef = firebase
       .database()

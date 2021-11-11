@@ -80,6 +80,11 @@ import firebase from "firebase";
 export default {
   name: "users",
   middleware: ["check-auth", "auth"],
+  head() {
+    return {
+      title: "Users"
+    };
+  },
   created() {
     const dbRef = firebase.database().ref(`/users`);
 

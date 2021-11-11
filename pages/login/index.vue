@@ -73,6 +73,11 @@ import firebase from "firebase";
 export default {
   name: "Login",
   components: {},
+  head() {
+    return {
+      title: "Login"
+    };
+  },
   data() {
     return {
       email: "",

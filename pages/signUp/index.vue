@@ -59,6 +59,11 @@
 import axios from "axios";
 export default {
   name: "SignUp",
+  head() {
+    return {
+      title: "Signup"
+    };
+  },
   data() {
     return {
       email: "",

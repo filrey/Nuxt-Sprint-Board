@@ -223,6 +223,11 @@ import Login from "../components/login.vue";
 export default {
   name: "welcome",
   components: { Login },
+  head() {
+    return {
+      title: "Welcome"
+    };
+  },
   data() {
     return {
       articles: [
