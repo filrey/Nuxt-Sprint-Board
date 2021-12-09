@@ -28,8 +28,6 @@
         </v-card>
       </v-col>
     </v-row>
-
-    <h1>Statistics</h1>
   </div>
 </template>
 

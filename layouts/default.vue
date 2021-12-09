@@ -146,9 +146,24 @@ export default {
       fixed: false,
       items: [
         {
-          icon: "mdi-apps",
+          icon: "mdi-home",
           title: "Welcome",
           to: "/"
+        },
+        {
+          icon: "mdi-view-dashboard",
+          title: "Dashboard",
+          to: "/dashboard"
+        },
+        {
+          icon: "mdi-sitemap",
+          title: "Projects",
+          to: "/projects"
+        },
+        {
+          icon: "mdi-account-group",
+          title: "Manage Users",
+          to: "/users"
         },
         {
           icon: "mdi-account",
@@ -159,31 +174,6 @@ export default {
           icon: "mdi-chevron-right-box-outline",
           title: "Login",
           to: "/login"
-        },
-        {
-          icon: "mdi-chart-bubble",
-          title: "Projects",
-          to: "/projects"
-        },
-        {
-          icon: "mdi-grid",
-          title: "Dashboard",
-          to: "/dashboard"
-        },
-        {
-          icon: "mdi-face",
-          title: "Demo",
-          to: "/demo"
-        },
-        {
-          icon: "mdi-plus",
-          title: "Create",
-          to: "/create"
-        },
-        {
-          icon: "mdi-account",
-          title: "Manage Users",
-          to: "/users"
         }
       ],
       miniVariant: false,
