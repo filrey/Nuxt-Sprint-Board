@@ -410,7 +410,7 @@ const createStore = () => {
               .split("=")[1]
               .replace(/%20/gi, " ");
           }
-        } else {
+        } else if (process.client) {
           token = localStorage.getItem("token");
           expirationDate = localStorage.getItem("tokenExpiration");
 

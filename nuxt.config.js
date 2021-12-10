@@ -1,5 +1,7 @@
 import colors from "vuetify/es5/util/colors";
 
+const axios = require("axios");
+
 export default {
   /*
    ** Nuxt rendering mode
@@ -10,7 +12,7 @@ export default {
    ** Nuxt target
    ** See https://nuxtjs.org/api/configuration-target
    */
-  // target: "server",
+  target: "static",
   /*
    ** Headers of the page
    ** See https://nuxtjs.org/api/configuration-head
@@ -84,5 +86,19 @@ export default {
   transition: {
     name: "fade",
     mode: "out-in"
+  },
+  generate: {
+    routes: function() {
+      return axios
+        .get("https://agile-sprint-board.firebaseio.com/projects.json")
+        .then(res => {
+          const routes = [];
+          for (const key in res.data) {
+            routes.push("/projects/" + key);
+          }
+
+          return routes;
+        });
+    }
   }
 };
