@@ -1,6 +1,6 @@
 import colors from "vuetify/es5/util/colors";
 
-const axios = require("axios");
+// const axios = require("axios");
 
 export default {
   /*
@@ -86,19 +86,19 @@ export default {
   transition: {
     name: "fade",
     mode: "out-in"
-  },
-  generate: {
-    routes: function() {
-      return axios
-        .get("https://agile-sprint-board.firebaseio.com/projects.json")
-        .then(res => {
-          const routes = [];
-          for (const key in res.data) {
-            routes.push("/projects/" + key);
-          }
-
-          return routes;
-        });
-    }
   }
+  // generate: {
+  //   routes: function() {
+  //     return axios
+  //       .get("https://agile-sprint-board.firebaseio.com/projects.json")
+  //       .then(res => {
+  //         const routes = [];
+  //         for (const key in res.data) {
+  //           routes.push("/projects/" + key);
+  //         }
+
+  //         return routes;
+  //       });
+  //   }
+  // }
 };
