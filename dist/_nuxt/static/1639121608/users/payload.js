@@ -1,1 +1,0 @@
-__NUXT_JSONP__("/users", (function(a,b,c){return {data:[],fetch:[],mutations:[[a,{message:"Session has expired",color:b}],["clearToken",c],["clearUser",c],[a,{message:"You must be logged in to view this page",color:b}]]}}("setSnackbar","error",void 0)));
