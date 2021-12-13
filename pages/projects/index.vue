@@ -7,7 +7,7 @@
     >
     <!-- Project Tiles -->
     <v-row>
-      <v-col cols="12" sm="6" v-for="item in projects" :key="item.id">
+      <v-col cols="12" sm="6" v-for="(item, index) in projects" :key="index">
         <v-card class="mx-auto my-12" max-width="750">
           <v-img
             height="250"
@@ -40,10 +40,7 @@
           </v-card-text>
 
           <v-card-actions>
-            <v-btn
-              color="deep-purple lighten-2"
-              text
-              @click="onOverview(item.id)"
+            <v-btn color="deep-purple lighten-2" text @click="onOverview(index)"
               >Overview</v-btn
             >
           </v-card-actions>
@@ -95,22 +92,30 @@
   </div>
 </template>
 <script>
+import firebase from "firebase";
 export default {
   name: "Projects",
   middleware: ["check-auth", "auth"],
-  computed: {
-    projects() {
-      return this.$store.getters.loadedProjects;
-    }
-  },
   head() {
     return {
       title: "Projects"
     };
   },
+  mounted() {
+    const userRef = firebase.database().ref(`/projects`);
+
+    userRef
+      .once("value", snapshot => {
+        this.projects = snapshot.val();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
   data() {
     return {
       dialog: false,
+      projects: [],
       project: {
         name: "",
         description: ""
