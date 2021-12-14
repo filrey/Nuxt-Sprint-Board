@@ -6,7 +6,8 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "deploy" : "firebase deploy --only hosting"
   },
   "dependencies": {
     "axios": "^0.20.0",
