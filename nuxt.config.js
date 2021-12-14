@@ -7,6 +7,8 @@ export default {
    */
   mode: "universal",
   ssr: false,
+
+  // Server settings for Google Engine App hosting
   // server: {
   //   port: process.env.PORT || 8080, // default: 3000
   //   host: "0.0.0.0", // default: localhost,

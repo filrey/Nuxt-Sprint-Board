@@ -1,6 +1,9 @@
 <template>
   <div class="my-3 mx-5">
-    <v-breadcrumbs :items="info.breadcrumbs" divider="-"></v-breadcrumbs>
+    <v-breadcrumbs
+      :items="Object.values(breadcrumbs)"
+      divider="-"
+    ></v-breadcrumbs>
     <h1>Ticket Details</h1>
 
     <v-row>
@@ -32,7 +35,7 @@
             <v-col cols="6">
               <v-text-field
                 label="Title"
-                v-model="info.ticket.title"
+                v-model="ticket.title"
                 :readonly="!editTicket"
                 filled
                 shaped
@@ -41,10 +44,10 @@
             </v-col>
             <v-col cols="6">
               <v-select
-                @change="changeAssigned(info.ticket, $event)"
+                @change="changeAssigned(ticket, $event)"
                 :value="this.originalAssigned"
                 :disabled="!editTicket"
-                :items="Object.values(info.project.personnel)"
+                :items="personnel"
                 item-text="email"
                 item-value="uid"
                 prepend-icon="mdi-account"
@@ -69,7 +72,7 @@
             <v-col cols="6">
               <v-select
                 label="Type"
-                v-model="info.ticket.type"
+                v-model="ticket.type"
                 :items="['Bug', 'Feature', 'Task', 'Subtask', 'Epic']"
                 :readonly="!editTicket"
                 multiple
@@ -81,7 +84,7 @@
             <v-col cols="6">
               <v-select
                 label="Priority"
-                v-model="info.ticket.priority"
+                v-model="ticket.priority"
                 :items="['Lowest', 'Low', 'Medium', 'High', 'Top Priority']"
                 :readonly="!editTicket"
                 required
@@ -96,7 +99,7 @@
             <v-col cols="6">
               <v-text-field
                 label="Updated"
-                v-model="info.ticket.updated"
+                v-model="ticket.updated"
                 filled
                 shaped
                 disabled
@@ -106,7 +109,7 @@
             <v-col cols="6">
               <v-text-field
                 label="Created"
-                v-model="info.ticket.created"
+                v-model="ticket.created"
                 filled
                 shaped
                 disabled
@@ -118,7 +121,7 @@
           <v-row>
             <v-textarea
               label="Description"
-              v-model="info.ticket.description"
+              v-model="ticket.description"
               :readonly="!editTicket"
               class="ma-2"
               filled
@@ -244,10 +247,7 @@
             <v-col cols="12">
               <v-divider></v-divider>
               <v-timeline class="timeLineScroll" dense clipped>
-                <v-timeline-item
-                  v-for="log in this.info.ticket.logs"
-                  :key="log.data"
-                >
+                <v-timeline-item v-for="log in this.ticket.logs" :key="log.id">
                   <template v-slot:icon>
                     <v-avatar>
                       <img :src="log.user.photoUrl" />
@@ -298,62 +298,53 @@ export default {
     };
   },
   mounted() {
-    const dbRef = firebase
+    const projectRef = firebase
+      .database()
+      .ref(`/projects/${this.$route.params.id}`);
+
+    const ticketRef = firebase
       .database()
       .ref(
-        `/projects/${this.$route.params.id}/tickets/${this.$route.params.ticketId}/comments`
+        `/projects/${this.$route.params.id}/tickets/${this.$route.params.ticketId}`
       );
 
-    const assignedRef = firebase
-      .database()
-      .ref(
-        `/projects/${this.$route.params.id}/tickets/${this.$route.params.ticketId}/assigned`
-      );
-
-    dbRef.on("value", snapshot => {
-      this.comments = snapshot.val();
+    projectRef.on("value", snapshot => {
+      this.project = snapshot.val();
     });
 
-    assignedRef.on("value", snapshot => {
-      this.originalAssigned = snapshot.val();
+    ticketRef.on("value", snapshot => {
+      this.ticket = snapshot.val();
     });
+
+    this.breadcrumbs = [
+      {
+        text: "Home",
+        disabled: false,
+        href: "/"
+      },
+      {
+        text: "Projects",
+        disabled: false,
+        href: "/projects"
+      },
+      {
+        text: this.project.name,
+        disabled: false,
+        href: "/projects/" + this.$route.params.id + "/overview"
+      },
+      {
+        text: "Ticket" + this.$route.params.ticketId,
+        disabled: true,
+        href: "/projects/"
+      }
+    ];
+
+    this.originalAssigned = this.ticket.assigned;
+    this.comments = this.ticket.comments;
+
+    this.personnel = Object.values(this.project.personnel);
   },
   computed: {
-    info() {
-      let idData = this.$route.path.split("/");
-      idData.shift();
-      idData.shift();
-      idData.pop();
-      let project = this.$store.getters.loadedProjects.find(
-        project => project.id == idData[0]
-      );
-      let ticket = project.tickets[idData[1]];
-
-      let breadcrumbs = [
-        {
-          text: "Home",
-          disabled: false,
-          href: "/"
-        },
-        {
-          text: "Projects",
-          disabled: false,
-          href: "/projects"
-        },
-        {
-          text: project.name,
-          disabled: false,
-          href: "/projects/" + project.id + "/overview"
-        },
-        {
-          text: "Ticket" + idData[1],
-          disabled: true,
-          href: "/projects/"
-        }
-      ];
-
-      return { project, ticket, breadcrumbs, idData };
-    },
     user() {
       return this.$store.getters.loadedUser;
     }
@@ -386,9 +377,9 @@ export default {
         collection: { msg: this.newComment, time: timestamp, user: this.user },
         path:
           "projects/" +
-          this.info.idData[0] +
+          this.$route.params.id +
           "/tickets/" +
-          this.info.idData[1] +
+          this.$route.params.ticketId +
           "/comments",
         msgSucces: "Comment added",
         msgError: "Error while adding comment"
@@ -403,9 +394,9 @@ export default {
         },
         path:
           "projects/" +
-          this.info.idData[0] +
+          this.$route.params.id +
           "/tickets/" +
-          this.info.idData[1] +
+          this.$route.params.ticketId +
           "/logs",
         msgSucces: "Comment added",
         msgError: "Error while adding comment"
@@ -435,7 +426,7 @@ export default {
         " " +
         strTime;
 
-      this.info.ticket["updated"] = timestamp;
+      this.ticket["updated"] = timestamp;
       if (this.originalAssigned != undefined) {
         let idRemove = {
           path: `users/${this.originalAssigned.uid}/assignedTickets/${this.$route.params.id}/${this.$route.params.ticketId}`,
@@ -449,13 +440,13 @@ export default {
         collection: {
           [this.$route.params.ticketId]: this.$route.params.ticketId
         },
-        path: `users/${this.info.ticket.assigned.uid}/assignedTickets/${this.$route.params.id}`,
+        path: `users/${this.ticket.assigned.uid}/assignedTickets/${this.$route.params.id}`,
         msgSucces: "New user assigned",
         msgError: "Error while assigning personnel"
       };
 
       let writeData = {
-        collection: this.info.ticket,
+        collection: this.ticket,
         path: "projects/" + idData[2] + "/tickets/" + idData[3],
         msgSucces: "Ticket" + idData[3] + " updated",
         msgError: "Error while updating ticket"
@@ -471,10 +462,10 @@ export default {
           type: "detail",
           time: timestamp,
           data: {
-            title: this.info.ticket.title,
-            priority: this.info.ticket.priority,
-            ticketType: this.info.ticket.type,
-            description: this.info.ticket.description
+            title: this.ticket.title,
+            priority: this.ticket.priority,
+            ticketType: this.ticket.type,
+            description: this.ticket.description
           }
         },
         path: "projects/" + idData[2] + "/tickets/" + idData[3] + "/logs",
@@ -484,13 +475,17 @@ export default {
 
       this.$store.dispatch("newDataPush", logData);
 
-      this.originalAssigned = this.info.ticket.assigned;
+      this.originalAssigned = this.ticket.assigned;
 
       this.editTicket = false;
     }
   },
   data() {
     return {
+      project: "",
+      ticket: "",
+      personnel: [],
+      breadcrumbs: "",
       originalAssigned: null,
       comments: "",
       editTicket: false,
